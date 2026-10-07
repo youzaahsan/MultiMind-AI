@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>MultiMind AI — Multimodal RAG + AI Agent Intelligence Platform</title>
+  <meta name="description"
+    content="MultiMind AI is an enterprise Multimodal RAG + AI Agent Intelligence Platform for document analysis, AI chat, forecasting, and business intelligence.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- iOS viewport height fix -->
+  <script>
+    function setVH() {
+      var vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', vh + 'px');
+    }
+    setVH();
+    window.addEventListener('resize', setVH);
+    window.addEventListener('orientationchange', function () { setTimeout(setVH, 100); });
+  </script>
+</head>
+
+<body>
+
+  <!-- Sidebar Overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div class="app-layout">
+
+    <!-- ════════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════ -->
+    <aside class="sidebar" id="sidebar">
+
+      <!-- Brand -->
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="2" />
+            <path
+              d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">MultiMind AI</div>
+          <div class="brand-tagline">Multimodal RAG + AI Agent<br>Intelligence Platform</div>
+        </div>
+        <!-- Mobile close button -->
+        <button class="sidebar-close-btn" id="sidebar-close-btn" aria-label="Close sidebar">✕</button>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="sidebar-nav">
+
+        <!-- Workspace -->
+        <div class="nav-section">
+          <div class="nav-section-label">Workspace</div>
+
+          <button class="nav-item active" data-tab="tab-dashboard" id="nav-dashboard">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="7" height="9" x="3" y="3" rx="1" />
+                <rect width="7" height="5" x="14" y="3" rx="1" />
+                <rect width="7" height="9" x="14" y="12" rx="1" />
+                <rect width="7" height="5" x="3" y="16" rx="1" />
+              </svg></span>
+            Dashboard
+          </button>
+
+          <button class="nav-item" data-tab="tab-chat" id="nav-chat">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg></span>
+            AI Chat
+          </button>
+
+          <button class="nav-item" data-tab="tab-documents" id="nav-documents">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg></span>
+            Documents
+          </button>
+
+          <button class="nav-item" data-tab="tab-knowledge" id="nav-knowledge">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg></span>
+            Knowledge Base
+          </button>
+        </div>
+
+        <!-- Intelligence -->
+        <div class="nav-section">
+          <div class="nav-section-label">Intelligence</div>
+
+          <button class="nav-item" data-tab="tab-agents" id="nav-agents">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 8V4H8" />
+                <rect width="16" height="12" x="4" y="8" rx="2" />
+                <path d="M2 14h2M20 14h2M15 13v2M9 13v2" />
+              </svg></span>
+            AI Agents
+          </button>
+
+          <button class="nav-item" data-tab="tab-data" id="nav-data">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" x2="18" y1="20" y2="10" />
+                <line x1="12" x2="12" y1="20" y2="4" />
+                <line x1="6" x2="6" y1="20" y2="14" />
+              </svg></span>
+            Data Analysis
+          </button>
+
+          <button class="nav-item" data-tab="tab-vision" id="nav-vision">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg></span>
+            Analytics
+          </button>
+
+          <button class="nav-item" data-tab="tab-forecast" id="nav-forecast">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                <polyline points="16 7 22 7 22 13" />
+              </svg></span>
+            Forecasting
+          </button>
+
+          <button class="nav-item" data-tab="tab-reports" id="nav-reports">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+              </svg></span>
+            Reports
+          </button>
+        </div>
+
+        <!-- System -->
+        <div class="nav-section">
+          <div class="nav-section-label">System</div>
+
+          <button class="nav-item" data-tab="tab-activity" id="nav-activity">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg></span>
+            Activity
+          </button>
+
+          <button class="nav-item" data-tab="tab-settings" id="nav-settings">
+            <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg></span>
+            Settings
+          </button>
+        </div>
+
+      </nav>
+
+      <!-- Footer -->
+      <div class="sidebar-footer">
+        <div class="sidebar-system-status">
+          <div class="status-dot"></div>
+          <div class="status-info">
+            <div class="status-label" id="system-status-text">AI System</div>
+            <div class="status-sub">Online</div>
+          </div>
+          <div class="status-wave">
+            <svg width="22" height="14" viewBox="0 0 24 14" fill="none" stroke="#10B981" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 7h4l3-5 4 10 3-7 4 3 4-1" />
+            </svg>
+          </div>
+        </div>
+        <div class="sidebar-credit">
+          <div class="credit-line1">Develop and Design by</div>
+          <div class="credit-name" id="sidebar-credit-name">Youza Ahsan</div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ════════════════════════════════════
+       MAIN CONTENT WRAPPER
+  ════════════════════════════════════ -->
+    <div class="main-wrapper">
+
+      <!-- TOP NAVBAR -->
+      <header class="top-navbar">
+        <div class="navbar-left">
+          <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Sidebar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+          <span class="navbar-page-title" id="navbar-page-title">Dashboard</span>
+        </div>
+
+        <div class="navbar-search">
+          <span class="navbar-search-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+          </span>
+          <input type="text" id="global-search" placeholder="Search anything... (documents, questions, data, etc.)"
+            aria-label="Search anything">
+          <span class="navbar-search-kbd">⌘ K</span>
+        </div>
+
+        <div class="navbar-right">
+          <!-- Mobile search button -->
+          <button class="mobile-search-btn" id="mobile-search-toggle" aria-label="Search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+          </button>
+          <button class="navbar-icon-btn" aria-label="Notifications" title="Notifications" id="notifications-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span class="notif-badge"></span>
+          </button>
+          <button class="navbar-icon-btn" aria-label="Help" title="Help & Support">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <path d="M12 17h.01" />
+            </svg>
+          </button>
+
+          <div class="navbar-profile-wrap">
+            <div class="navbar-profile" id="profile-dropdown-toggle" role="button" tabindex="0"
+              aria-label="User profile">
+              <div class="profile-avatar" id="navbar-profile-avatar">U</div>
+              <div class="profile-info">
+                <div class="profile-name" id="profile-name">User</div>
+                <div class="profile-plan">Premium Plan</div>
+              </div>
+              <span class="profile-caret">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </span>
+            </div>
+
+            <!-- Profile Dropdown Menu -->
+            <div class="profile-dropdown-menu" id="profile-dropdown-menu">
+              <div class="dropdown-user-header">
+                <div class="dropdown-avatar" id="dropdown-avatar">U</div>
+                <div class="dropdown-user-details">
+                  <div class="dropdown-user-name" id="dropdown-user-name">User</div>
+                  <div class="dropdown-user-email" id="dropdown-user-email">user@multimind.ai</div>
+                  <span class="dropdown-badge">Enterprise Tier</span>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <button type="button" class="dropdown-item" id="dropdown-item-settings">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3" />
+                  <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+                <span>Settings & Preferences</span>
+              </button>
+              <button type="button" class="dropdown-item" id="dropdown-item-switch">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span>Switch User / Test Accounts</span>
+              </button>
+              <div class="dropdown-divider"></div>
+              <button type="button" class="dropdown-item danger" id="dropdown-item-logout">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                <span>Log Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTENT -->
+      <main class="page-content main-content" id="page-content">
+
+        <!-- ════════════════════════════════
+           TAB: DASHBOARD
+      ════════════════════════════════ -->
+        <section id="tab-dashboard" class="tab-pane active">
+          <div class="dashboard-grid">
+
+            <!-- MAIN COLUMN -->
+            <div class="dash-main">
+
+              <!-- Hero Banner -->
+              <div class="hero-banner">
+                <div class="hero-text">
+                  <h1 id="welcome-greeting">Good morning, User 👋</h1>
+                  <p>Welcome back to MultiMind AI.<br>Your intelligence workspace is ready.</p>
+                  <div class="hero-actions">
+                    <button class="btn btn-primary" id="open-upload-btn">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                      </svg>
+                      + Upload Document
+                    </button>
+                    <button class="btn btn-outline" id="explore-agents-btn">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+                      </svg>
+                      Explore AI Agents
+                    </button>
+                  </div>
+                </div>
+                <div class="hero-visual">
+                  <div class="hero-insights-title">Smarter Insights<br>Better Decisions</div>
+                  <div class="hero-laptop-wrap">
+                    <svg width="200" height="110" viewBox="0 0 220 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        <linearGradient id="laptopScreen" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#1E293B" />
+                          <stop offset="100%" stop-color="#0F172A" />
+                        </linearGradient>
+                        <filter id="nodeGlow" x="-50%" y="-50%" width="200%" height="200%">
+                          <feGaussianBlur stdDeviation="2.5" result="blur" />
+                          <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                        </filter>
+                      </defs>
+                      <!-- Desk line -->
+                      <line x1="10" y1="116" x2="210" y2="116" stroke="#E2E8F0" stroke-width="1.5"
+                        stroke-linecap="round" />
+
+                      <!-- Laptop Screen -->
+                      <polygon points="56,32 154,32 148,102 62,102" fill="#CBD5E1" rx="3" />
+                      <polygon points="60,36 150,36 144,98 66,98" fill="url(#laptopScreen)" />
+
+                      <!-- Display charts inside screen -->
+                      <path d="M74 80 Q90 64, 105 74 T134 54" stroke="#38BDF8" stroke-width="2" fill="none" />
+                      <rect x="114" y="66" width="6" height="20" rx="1" fill="#4F46E5" opacity="0.8" />
+                      <rect x="123" y="58" width="6" height="28" rx="1" fill="#38BDF8" opacity="0.9" />
+
+                      <!-- Laptop keyboard base -->
+                      <polygon points="42,102 168,102 182,114 28,114" fill="#E2E8F0" />
+                      <polygon points="48,104 162,104 174,113 36,113" fill="#F1F5F9" />
+                      <rect x="88" y="108" width="34" height="2.5" rx="1" fill="#CBD5E1" />
+
+                      <!-- Neural Network Nodes floating above laptop -->
+                      <line x1="126" y1="18" x2="170" y2="30" stroke="#60A5FA" stroke-width="1.2" stroke-dasharray="2 2"
+                        opacity="0.8" />
+                      <line x1="170" y1="30" x2="192" y2="16" stroke="#818CF8" stroke-width="1.2" opacity="0.7" />
+                      <line x1="170" y1="30" x2="162" y2="58" stroke="#38BDF8" stroke-width="1" opacity="0.6" />
+                      <line x1="126" y1="18" x2="162" y2="58" stroke="#60A5FA" stroke-width="1" stroke-dasharray="2 2"
+                        opacity="0.5" />
+                      <line x1="170" y1="30" x2="136" y2="48" stroke="#38BDF8" stroke-width="1.2" opacity="0.75" />
+
+                      <circle cx="126" cy="18" r="5" fill="#3B82F6" filter="url(#nodeGlow)" />
+                      <circle cx="126" cy="18" r="2.5" fill="#FFFFFF" />
+
+                      <circle cx="170" cy="30" r="6.5" fill="#6366F1" filter="url(#nodeGlow)" />
+                      <circle cx="170" cy="30" r="3" fill="#FFFFFF" />
+
+                      <circle cx="192" cy="16" r="4.5" fill="#38BDF8" filter="url(#nodeGlow)" />
+                      <circle cx="192" cy="16" r="2" fill="#FFFFFF" />
+
+                      <circle cx="162" cy="58" r="4" fill="#0EA5E9" filter="url(#nodeGlow)" />
+                      <circle cx="162" cy="58" r="2" fill="#FFFFFF" />
+
+                      <circle cx="112" cy="28" r="2" fill="#93C5FD" opacity="0.8" />
+                      <circle cx="184" cy="46" r="2" fill="#A5B4FC" opacity="0.8" />
+                      <circle cx="150" cy="12" r="2.5" fill="#38BDF8" opacity="0.7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- KPI Cards -->
+              <div class="kpi-row">
+                <div class="kpi-card">
+                  <div class="kpi-icon-wrap blue">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                      <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                  </div>
+                  <div class="kpi-body">
+                    <div class="kpi-label">Documents</div>
+                    <div class="kpi-value" id="stat-doc-count">124</div>
+                    <div class="kpi-sub-row">
+                      <span class="kpi-meta">Total documents</span>
+                      <span class="kpi-trend up" id="doc-trend">↑ 12%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="kpi-card">
+                  <div class="kpi-icon-wrap purple">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                    </svg>
+                  </div>
+                  <div class="kpi-body">
+                    <div class="kpi-label">Knowledge Base</div>
+                    <div class="kpi-value" id="stat-chunks-count">2,481</div>
+                    <div class="kpi-sub-row">
+                      <span class="kpi-meta">Indexed chunks</span>
+                      <span class="kpi-trend up" id="chunks-trend">↑ 8%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="kpi-card">
+                  <div class="kpi-icon-wrap teal">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                  </div>
+                  <div class="kpi-body">
+                    <div class="kpi-label">AI Conversations</div>
+                    <div class="kpi-value" id="stat-conversations">86</div>
+                    <div class="kpi-sub-row">
+                      <span class="kpi-meta">This month</span>
+                      <span class="kpi-trend up">↑ 24%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="kpi-card">
+                  <div class="kpi-icon-wrap orange">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 8V4H8" />
+                      <rect width="16" height="12" x="4" y="8" rx="2" />
+                      <path d="M2 14h2M20 14h2M15 13v2M9 13v2" />
+                    </svg>
+                  </div>
+                  <div class="kpi-body">
+                    <div class="kpi-label">AI Agents</div>
+                    <div class="kpi-value">8</div>
+                    <div class="kpi-sub-row">
+                      <span class="kpi-meta">Active agents</span>
+                      <span class="kpi-trend up">↑ 100%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Actions -->
+              <div>
+                <div class="section-header">
+                  <div>
+                    <div class="section-title">Quick Actions</div>
+                    <div class="section-subtitle">Get started with MultiMind AI</div>
+                  </div>
+                </div>
+                <div class="quick-actions-grid">
+                  <div class="qa-card" id="qa-upload" role="button" tabindex="0">
+                    <div class="qa-icon blue">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                      </svg>
+                    </div>
+                    <div class="qa-title">Upload Document</div>
+                    <div class="qa-desc">Upload PDF, DOCX, TXT, CSV or Excel files.</div>
+                    <div class="qa-arrow">→</div>
+                  </div>
+
+                  <div class="qa-card" id="qa-chat" role="button" tabindex="0">
+                    <div class="qa-icon purple">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                      </svg>
+                    </div>
+                    <div class="qa-title">Ask AI</div>
+                    <div class="qa-desc">Chat with your knowledge base.</div>
+                    <div class="qa-arrow">→</div>
+                  </div>
+
+                  <div class="qa-card" id="qa-data" role="button" tabindex="0">
+                    <div class="qa-icon green">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" x2="18" y1="20" y2="10" />
+                        <line x1="12" x2="12" y1="20" y2="4" />
+                        <line x1="6" x2="6" y1="20" y2="14" />
+                      </svg>
+                    </div>
+                    <div class="qa-title">Analyze Data</div>
+                    <div class="qa-desc">Analyze CSV and Excel files.</div>
+                    <div class="qa-arrow">→</div>
+                  </div>
+
+                  <div class="qa-card" id="qa-report" role="button" tabindex="0">
+                    <div class="qa-icon orange">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                          d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+                      </svg>
+                    </div>
+                    <div class="qa-title">Generate Report</div>
+                    <div class="qa-desc">Create an AI-powered report.</div>
+                    <div class="qa-arrow">→</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recent Documents -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="section-header" style="margin-bottom:0">
+                    <div>
+                      <div class="section-title">Recent Documents</div>
+                      <div class="section-subtitle">Your latest uploaded and processed files</div>
+                    </div>
+                    <a class="view-all-link" id="dash-view-all-docs" href="#">
+                      View all
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+                <div class="panel-body" style="padding-top:0">
+                  <div class="doc-table-wrap">
+                    <table class="doc-table">
+                      <thead>
+                        <tr>
+                          <th>Document</th>
+                          <th>Type</th>
+                          <th>Size</th>
+                          <th>Uploaded</th>
+                          <th>Status</th>
+                          <th>Chunks</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody id="dash-doc-table-body">
+                        <tr>
+                          <td colspan="7">
+                            <div class="empty-state" style="padding:20px">
+                              <div class="spinner" style="width:20px;height:20px"></div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom Grid: Activity + Usage -->
+              <div class="dashboard-bottom-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px">
+
+                <!-- Recent Activity -->
+                <div class="panel">
+                  <div class="panel-header">
+                    <div class="section-header" style="margin-bottom:0">
+                      <div>
+                        <div class="section-title">Recent Activity</div>
+                      </div>
+                      <a class="view-all-link" href="#" id="dash-view-all-activity">
+                        View all →
+                      </a>
+                    </div>
+                  </div>
+                  <div class="panel-body">
+                    <div class="activity-list" id="dash-activity-list">
+                      <!-- populated by JS -->
+                      <div class="activity-item">
+                        <div class="activity-icon blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                            <polyline points="14 2 14 8 20 8" />
+                          </svg></div>
+                        <div class="activity-body">
+                          <div class="activity-title">Sales Report 2024.xlsx</div>
+                          <div class="activity-desc">Analyzed by Data Agent</div>
+                        </div>
+                        <div class="activity-time">2h ago</div>
+                      </div>
+                      <div class="activity-item">
+                        <div class="activity-icon purple"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                          </svg></div>
+                        <div class="activity-body">
+                          <div class="activity-title">Research Paper.pdf</div>
+                          <div class="activity-desc">Summarized by Document Agent</div>
+                        </div>
+                        <div class="activity-time">4h ago</div>
+                      </div>
+                      <div class="activity-item">
+                        <div class="activity-icon green"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" x2="18" y1="20" y2="10" />
+                            <line x1="12" x2="12" y1="20" y2="4" />
+                            <line x1="6" x2="6" y1="20" y2="14" />
+                          </svg></div>
+                        <div class="activity-body">
+                          <div class="activity-title">Product Data.csv</div>
+                          <div class="activity-desc">Processed for analysis</div>
+                        </div>
+                        <div class="activity-time">6h ago</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Usage Overview -->
+                <div class="panel">
+                  <div class="panel-header">
+                    <div class="section-header" style="margin-bottom:0">
+                      <div>
+                        <div class="section-title">Usage Overview</div>
+                      </div>
+                      <div style="display:flex;gap:6px">
+                        <button class="btn btn-ghost btn-sm" id="usage-7d">7D</button>
+                        <button class="btn btn-ghost btn-sm active-range" id="usage-30d"
+                          style="background:#EEF2FF;border-color:#C7D2FE;color:#4F46E5;font-weight:600">30D</button>
+                        <button class="btn btn-ghost btn-sm" id="usage-3m">3M</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="panel-body">
+                    <div class="usage-legend">
+                      <div class="legend-item">
+                        <div class="legend-dot" style="background:#4F46E5"></div>Queries
+                      </div>
+                      <div class="legend-item">
+                        <div class="legend-dot" style="background:#38BDF8"></div>Documents
+                      </div>
+                    </div>
+
+                    <div class="chart-with-axes">
+                      <div class="y-axis-labels">
+                        <span>100</span>
+                        <span>75</span>
+                        <span>50</span>
+                        <span>25</span>
+                        <span>0</span>
+                      </div>
+                      <div class="chart-main-area">
+                        <svg class="sparkline-chart" viewBox="0 0 320 85" preserveAspectRatio="none">
+                          <defs>
+                            <linearGradient id="gradQueries" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.25" />
+                              <stop offset="100%" stop-color="#4F46E5" stop-opacity="0.0" />
+                            </linearGradient>
+                            <linearGradient id="gradDocs" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.25" />
+                              <stop offset="100%" stop-color="#38BDF8" stop-opacity="0.0" />
+                            </linearGradient>
+                          </defs>
+                          <!-- Grid lines -->
+                          <line x1="0" y1="5" x2="320" y2="5" stroke="#F1F5F9" stroke-width="1" />
+                          <line x1="0" y1="25" x2="320" y2="25" stroke="#F1F5F9" stroke-width="1" />
+                          <line x1="0" y1="45" x2="320" y2="45" stroke="#F1F5F9" stroke-width="1" />
+                          <line x1="0" y1="65" x2="320" y2="65" stroke="#F1F5F9" stroke-width="1" />
+                          <line x1="0" y1="80" x2="320" y2="80" stroke="#E2E8F0" stroke-width="1" />
+
+                          <!-- Queries line (blue wavy) -->
+                          <path
+                            d="M0,58 C15,55 30,42 45,40 C65,38 80,48 100,43 C120,38 140,24 160,22 C185,20 205,32 230,26 C255,20 280,12 300,10 L320,10"
+                            stroke="#4F46E5" stroke-width="2" fill="none" />
+                          <path
+                            d="M0,58 C15,55 30,42 45,40 C65,38 80,48 100,43 C120,38 140,24 160,22 C185,20 205,32 230,26 C255,20 280,12 300,10 L320,10 L320,80 L0,80 Z"
+                            fill="url(#gradQueries)" />
+
+                          <!-- Documents line (cyan wavy) -->
+                          <path
+                            d="M0,68 C20,66 40,60 60,56 C80,52 100,58 120,53 C140,48 160,42 180,38 C200,34 220,40 240,36 C260,32 280,26 300,24 L320,22"
+                            stroke="#38BDF8" stroke-width="2" fill="none" />
+                          <path
+                            d="M0,68 C20,66 40,60 60,56 C80,52 100,58 120,53 C140,48 160,42 180,38 C200,34 220,40 240,36 C260,32 280,26 300,24 L320,22 L320,80 L0,80 Z"
+                            fill="url(#gradDocs)" />
+                        </svg>
+                        <!-- X-axis dates -->
+                        <div class="x-axis-dates">
+                          <span>Apr 21</span>
+                          <span>Apr 24</span>
+                          <span>Apr 27</span>
+                          <span>Apr 30</span>
+                          <span>May 3</span>
+                          <span>May 6</span>
+                          <span>May 9</span>
+                          <span>May 12</span>
+                          <span>May 15</span>
+                          <span>May 18</span>
+                          <span>May 21</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="usage-summary-footer">
+                      <div>
+                        <div class="us-label">This Month</div>
+                        <div class="us-val" id="usage-conversations">86</div>
+                        <div class="us-sub">Conversations</div>
+                      </div>
+                      <div>
+                        <div class="us-label">&nbsp;</div>
+                        <div class="us-val" id="usage-documents">124</div>
+                        <div class="us-sub">Documents</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Hidden upload input (accessible everywhere) -->
+              <input type="file" id="file-input-global" style="display:none" multiple
+                accept=".pdf,.docx,.txt,.csv,.xlsx,.xls,.png,.jpg,.jpeg,.webp">
+              <div id="upload-progress-bar" class="upload-progress" style="display:none">
+                <div class="spinner"></div>
+                <span id="upload-status-msg">Uploading document...</span>
+              </div>
+
+            </div>
+
+            <!-- ASIDE COLUMN -->
+            <div class="dash-aside">
+
+              <!-- Promo light card with 3D crystal cubes -->
+              <div class="promo-banner light">
+                <div class="promo-content-row">
+                  <div class="promo-cube-art">
+                    <svg width="68" height="68" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        <linearGradient id="cubeTop" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#93C5FD" />
+                          <stop offset="100%" stop-color="#3B82F6" />
+                        </linearGradient>
+                        <linearGradient id="cubeLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#3B82F6" />
+                          <stop offset="100%" stop-color="#1D4ED8" />
+                        </linearGradient>
+                        <linearGradient id="cubeRight" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#60A5FA" />
+                          <stop offset="100%" stop-color="#2563EB" />
+                        </linearGradient>
+                        <linearGradient id="glowG" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#60A5FA" stop-opacity="0.45" />
+                          <stop offset="100%" stop-color="#3B82F6" stop-opacity="0" />
+                        </linearGradient>
+                        <filter id="cubeGlow" x="-20%" y="-20%" width="140%" height="140%">
+                          <feGaussianBlur stdDeviation="3" result="blur" />
+                          <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                        </filter>
+                      </defs>
+                      <!-- Soft ambient glow -->
+                      <circle cx="50" cy="50" r="36" fill="url(#glowG)" />
+
+                      <!-- Main 3D faceted isometric crystal cube -->
+                      <path d="M50 18 L76 33 L50 48 L24 33 Z" fill="url(#cubeTop)" />
+                      <path d="M24 33 L50 48 L50 78 L24 63 Z" fill="url(#cubeLeft)" />
+                      <path d="M50 48 L76 33 L76 63 L50 78 Z" fill="url(#cubeRight)" />
+
+                      <!-- Prism edges highlights -->
+                      <path d="M50 18 L50 48 M24 33 L50 48 M76 33 L50 48" stroke="#DBEAFE" stroke-width="1.2"
+                        stroke-linecap="round" />
+
+                      <!-- Secondary floating crystal shard -->
+                      <polygon points="68,60 84,68 84,82 68,74" fill="#38BDF8" opacity="0.8" />
+                      <polygon points="68,60 84,68 76,52" fill="#BAE6FD" opacity="0.9" />
+                    </svg>
+                  </div>
+                  <div class="promo-text-wrap">
+                    <div class="promo-heading">Powerful AI for<br>Your Data</div>
+                    <div class="promo-sub">Upload, analyze, ask, and get insights from multiple data types — all in one
+                      place.</div>
+                    <button class="btn btn-primary btn-sm" id="explore-features-btn">
+                      Explore Features →
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI Chat Panel -->
+              <div class="panel chat-panel-aside">
+                <div class="chat-panel-header">
+                  <div>
+                    <div class="chat-panel-title">AI Chat</div>
+                  </div>
+                  <button class="btn btn-ghost btn-sm" id="dash-new-chat-btn">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    New Chat
+                  </button>
+                </div>
+                <div class="chat-panel-desc">Ask anything about your documents, data or get help from AI agents.</div>
+                <div class="chat-prompts-grid">
+                  <button class="chat-prompt-btn" data-prompt="Summarize this document">
+                    <span class="chat-prompt-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                          d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+                      </svg></span>
+                    Summarize this document
+                  </button>
+                  <button class="chat-prompt-btn" data-prompt="Analyze my sales data">
+                    <span class="chat-prompt-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" x2="18" y1="20" y2="10" />
+                        <line x1="12" x2="12" y1="20" y2="4" />
+                        <line x1="6" x2="6" y1="20" y2="14" />
+                      </svg></span>
+                    Analyze my sales data
+                  </button>
+                  <button class="chat-prompt-btn" data-prompt="Create 20 MCQs from this PDF">
+                    <span class="chat-prompt-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                        <path d="M12 17h.01" />
+                      </svg></span>
+                    Create 20 MCQs from this PDF
+                  </button>
+                  <button class="chat-prompt-btn" data-prompt="What are the key insights?">
+                    <span class="chat-prompt-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="2" />
+                        <path
+                          d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                      </svg></span>
+                    What are the key insights?
+                  </button>
+                </div>
+                <div class="chat-input-area">
+                  <input type="text" id="dash-chat-input" placeholder="Type your message...">
+                  <button class="chat-send-btn" id="dash-chat-send">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="22" y1="2" x2="11" y2="13" />
+                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Popular Tools -->
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="section-title">Popular Tools</div>
+                </div>
+                <div class="panel-body" style="padding-top:4px">
+                  <div class="tools-list">
+                    <div class="tool-item" id="tool-summarizer" role="button" tabindex="0">
+                      <div class="tool-icon-wrap green"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                          <polyline points="14 2 14 8 20 8" />
+                        </svg></div>
+                      <div class="tool-info">
+                        <div class="tool-name">Document Summarizer</div>
+                        <div class="tool-desc">Get key points from your documents</div>
+                      </div>
+                      <span class="tool-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg></span>
+                    </div>
+                    <div class="tool-item" id="tool-analyst" role="button" tabindex="0">
+                      <div class="tool-icon-wrap blue"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <line x1="18" x2="18" y1="20" y2="10" />
+                          <line x1="12" x2="12" y1="20" y2="4" />
+                          <line x1="6" x2="6" y1="20" y2="14" />
+                        </svg></div>
+                      <div class="tool-info">
+                        <div class="tool-name">Data Analyst</div>
+                        <div class="tool-desc">Analyze and visualize your data</div>
+                      </div>
+                      <span class="tool-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg></span>
+                    </div>
+                    <div class="tool-item" id="tool-quiz" role="button" tabindex="0">
+                      <div class="tool-icon-wrap purple"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                          <path d="M12 17h.01" />
+                        </svg></div>
+                      <div class="tool-info">
+                        <div class="tool-name">Quiz Generator</div>
+                        <div class="tool-desc">Create MCQs and quizzes</div>
+                      </div>
+                      <span class="tool-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg></span>
+                    </div>
+                    <div class="tool-item" id="tool-report" role="button" tabindex="0">
+                      <div class="tool-icon-wrap orange"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path
+                            d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+                        </svg></div>
+                      <div class="tool-info">
+                        <div class="tool-name">Report Generator</div>
+                        <div class="tool-desc">Generate professional reports</div>
+                      </div>
+                      <span class="tool-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════
+           TAB: AI CHAT
+      ════════════════════════════════ -->
+        <section id="tab-chat" class="tab-pane" style="padding:0">
+          <div class="chat-page">
+            <div class="chat-page-header">
+              <div class="page-hero" style="margin-bottom:12px">
+                <h2>AI Chat</h2>
+                <p>Conversational RAG, autonomous tool calling &amp; verified citations</p>
+              </div>
+            </div>
+            <div class="chat-messages-wrap" id="chat-messages">
+              <div class="msg-bubble bot">
+                <div class="msg-avatar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="2" />
+                    <path
+                      d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                  </svg></div>
+                <div class="msg-content">
+                  <div class="msg-meta"><span style="font-weight:600;color:#4F46E5">🤖 MultiMind
+                      Orchestrator</span><span>Just now</span></div>
+                  <div class="msg-text">Hello! I am MultiMind AI, your multimodal RAG and intelligence assistant. You
+                    can ask me to:
+                    • <strong>Summarize documents</strong> or compare uploaded files
+                    • <strong>Query domain knowledge</strong> with grounded source citations
+                    • <strong>Explain diagrams or charts</strong> from visual uploads
+                    • <strong>Analyze CSV/Excel datasets</strong> for KPIs, statistics, or trends
+                    • <strong>Generate 20 MCQs</strong> or comprehensive executive reports
+
+                    What would you like to explore?</div>
+                </div>
+              </div>
+            </div>
+            <div class="chat-input-bar">
+              <input type="text" id="chat-input-field"
+                placeholder="Ask a question, query a document, or request an analysis..." autocomplete="off">
+              <button class="btn btn-primary" id="chat-send-btn">
+                Send
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13" />
+                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════
+           TAB: DOCUMENTS
+      ════════════════════════════════ -->
+        <section id="tab-documents" class="tab-pane">
+          <div class="page-hero">
+            <h2>Document Library</h2>
+            <p>All processed multi-format documents, chunk statistics and summaries</p>
+          </div>
+          <div class="page-toolbar">
+            <div class="toolbar-left">
+              <button class="btn btn-primary" id="btn-browse-docs">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                Upload File
+              </button>
+              <button class="btn btn-outline" id="btn-refresh-docs">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                  <path d="M21 3v5h-5" />
+                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                  <path d="M8 16H3v5" />
+                </svg>
+                Refresh
+              </button>
+            </div>
+            <div class="toolbar-right">
+              <div style="font-size:12.5px;color:#94a3b8"><span id="docs-count-label">0</span> documents</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="doc-table-wrap">
+              <table class="doc-table" id="documents-table">
+                <thead>
+                  <tr>
+                    <th>Document</th>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>Pages</th>
+                    <th>Chunks</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="documents-table-body">
+                  <tr>
+                    <td colspan="7">
+                      <div class="empty-state">
+                        <div class="spinner" style="width:20px;height:20px"></div>
+                        <p>Loading documents...</p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════
+           TAB: KNOWLEDGE BASE
+      ════════════════════════════════ -->
+        <section id="tab-knowledge" class="tab-pane">
+          <div class="page-hero">
+            <h2>Knowledge Base</h2>
+            <p>Vector store index, knowledge graph nodes and embeddings</p>
+          </div>
+          <div class="kpi-row" style="margin-bottom:20px">
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">Indexed Chunks</span>
+                <div class="kpi-icon-wrap purple"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                  </svg></div>
+              </div>
+              <div class="kpi-value" id="kb-chunks">—</div>
+              <div class="kpi-meta">Vector store documents indexed</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">Graph Nodes</span>
+                <div class="kpi-icon-wrap blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="18" r="3" />
+                    <circle cx="6" cy="6" r="3" />
+                    <path d="M13 6h3a2 2 0 0 1 2 2v7" />
+                    <line x1="6" x2="6" y1="9" y2="21" />
+                  </svg></div>
+              </div>
+              <div class="kpi-value" id="kb-nodes">—</div>
+              <div class="kpi-meta">Knowledge graph nodes</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">System Status</span>
+                <div class="kpi-icon-wrap green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg></div>
+              </div>
+              <div class="kpi-value" id="kb-status" style="font-size:18px">—</div>
+              <div class="kpi-meta">API health status</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <div class="section-title">Knowledge Graph &amp; Vector Index</div>
+            </div>
+            <div class="panel-body">
+              <div id="kb-details-box" class="output-box" style="min-height:180px">Loading knowledge base information...
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════
+           TAB: AI AGENTS
+      ════════════════════════════════ -->
+        <section id="tab-agents" class="tab-pane">
+          <div class="page-hero">
+            <h2>AI Agents</h2>
+            <p>Specialized autonomous agents for every intelligence task</p>
+          </div>
+          <div class="agents-grid" id="agents-grid">
+            <!-- Research Agent -->
+            <div class="agent-card">
+              <div class="agent-card-header">
+                <div class="agent-card-icon" style="background:rgba(59,130,246,0.1);color:#2563EB">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
+                </div>
+                <span class="agent-status">Active</span>
+              </div>
+              <div class="agent-card-name">Research Agent</div>
+              <div class="agent-card-desc">Performs in-depth document research and knowledge retrieval with grounded
+                source citations.</div>
+              <button class="btn btn-outline btn-sm" onclick="switchToChat('Research Agent')">Use Agent</button>
+            </div>
+            <!-- Document Agent -->
+            <div class="agent-card">
+              <div class="agent-card-header">
+                <div class="agent-card-icon" style="background:rgba(79,70,229,0.1);color:#4F46E5">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                </div>
+                <span class="agent-status">Active</span>
+              </div>
+              <div class="agent-card-name">Document Agent</div>
+              <div class="agent-card-desc">Summarizes, extracts, and compares multi-format documents intelligently.
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="switchToChat('Document Agent')">Use Agent</button>
+            </div>
+            <!-- Data Agent -->
+            <div class="agent-card">
+              <div class="agent-card-header">
+                <div class="agent-card-icon" style="background:rgba(16,185,129,0.1);color:#059669">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" x2="18" y1="20" y2="10" />
+                    <line x1="12" x2="12" y1="20" y2="4" />
+                    <line x1="6" x2="6" y1="20" y2="14" />
+                  </svg>
+                </div>
+                <span class="agent-status">Active</span>
+              </div>
+              <div class="agent-card-name">Data Agent</div>
+              <div class="agent-card-desc">Analyzes CSV, Excel files for ML, KPIs, clustering and anomaly detection.
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="switchToTab('tab-data')">Use Agent</button>
+            </div>
+            <!-- Vision Agent -->
+            <div class="agent-card">
+              <div class="agent-card-header">
+                <div class="agent-card-icon" style="background:rgba(6,182,212,0.1);color:#0891B2">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </div>
+                <span class="agent-status">Active</span>
+              </div>
+              <div class="agent-card-name">Vision Agent</div>
+              <div class="agent-card-desc">Interprets images, diagrams, charts and schematics using multimodal AI.</div>
+              <button class="btn btn-outline btn-sm" onclick="switchToChat('Vision Agent')">Use Agent</button>
+            </div>
+            <!-- Report Agent -->
+            <div class="agent-card">
+              <div class="agent-card-header">
+                <div class="agent-card-icon" style="background:rgba(245,158,11,0.1);color:#D97706">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                      d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+                  </svg>
+                </div>
+                <span class="agent-status">Active</span>
+              </div>
+              <div class="agent-card-name">Report Agent</div>
+              <div class="agent-card-desc">Generates executive intelligence reports with summary, methodology and
+                recommendations.</div>
+              <button class="btn btn-outline btn-sm" onclick="switchToTab('tab-reports')">Use Agent</button>
+            </div>
+            <!-- Forecasting Agent -->
+            <div class="agent-card">
+              <div class="agent-card-header">
+                <div class="agent-card-icon" style="background:rgba(139,92,246,0.1);color:#7C3AED">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                    <polyline points="16 7 22 7 22 13" />
+                  </svg>
+                </div>
+                <span class="agent-status">Active</span>
+              </div>
+              <div class="agent-card-name">Forecasting Agent</div>
+              <div class="agent-card-desc">Autoregressive time series forecasting with out-of-sample validation metrics.
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="switchToTab('tab-forecast')">Use Agent</button>
+            </div>
+            <!-- Quiz Agent -->
+            <div class="agent-card">
+              <div class="agent-card-header">
+                <div class="agent-card-icon" style="background:rgba(236,72,153,0.1);color:#DB2777">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                    <path d="M12 17h.01" />
+                  </svg>
+                </div>
+                <span class="agent-status">Active</span>
+              </div>
+              <div class="agent-card-name">Quiz Agent</div>
+              <div class="agent-card-desc">Creates verified MCQ knowledge assessments with answer keys from any
+                document.</div>
+              <button class="btn btn-outline btn-sm" onclick="switchToTab('tab-reports')">Use Agent</button>
+            </div>
+            <!-- BI Agent -->
+            <div class="agent-card">
+              <div class="agent-card-header">
+                <div class="agent-card-icon" style="background:rgba(239,68,68,0.1);color:#DC2626">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                    <line x1="8" y1="21" x2="16" y2="21" />
+                    <line x1="12" y1="17" x2="12" y2="21" />
+                  </svg>
+                </div>
+                <span class="agent-status">Active</span>
+              </div>
+              <div class="agent-card-name">BI Agent</div>
+              <div class="agent-card-desc">Business intelligence KPIs, revenue analysis and executive dashboards.</div>
+              <button class="btn btn-outline btn-sm" onclick="switchToTab('tab-data')">Use Agent</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════
+           TAB: DATA ANALYSIS
+      ════════════════════════════════ -->
+        <section id="tab-data" class="tab-pane">
+          <div class="page-hero">
+            <h2>Data Analysis</h2>
+            <p>Tabular data analytics, ML classification, regression, clustering and BI</p>
+          </div>
+          <div class="data-analysis-layout">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="section-title">Configure Analysis</div>
+              </div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label class="form-label">Dataset File Path</label>
+                  <input type="text" id="ml-file-input" class="form-input" placeholder="e.g. data/uploads/sales.csv">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Analysis / ML Task</label>
+                  <select id="ml-task-select" class="form-select">
+                    <option value="business_intelligence">Business Intelligence &amp; KPIs</option>
+                    <option value="classification">Supervised Classification</option>
+                    <option value="regression">Supervised Regression</option>
+                    <option value="clustering">Unsupervised Clustering (K-Means)</option>
+                    <option value="anomaly_detection">Anomaly Detection (Isolation Forest)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Target Column (for ML tasks)</label>
+                  <input type="text" id="ml-target-col" class="form-input" placeholder="e.g. Revenue, Label, or Class">
+                </div>
+                <button class="btn btn-primary" id="run-ml-btn" style="width:100%">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                  Execute Analysis
+                </button>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="section-title">Analysis Results</div>
+              </div>
+              <div class="panel-body">
+                <div class="output-box" id="ml-results-box" style="min-height:360px">Execute a task to see results,
+                  metrics, and insights here.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════
+           TAB: ANALYTICS (Vision/Image)
+      ════════════════════════════════ -->
+        <section id="tab-vision" class="tab-pane">
+          <div class="page-hero">
+            <h2>Analytics &amp; Vision Lab</h2>
+            <p>Image analysis, technical diagram interpretation and visual AI</p>
+          </div>
+          <div class="vision-layout">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="section-title">Upload Image for Analysis</div>
+              </div>
+              <div class="panel-body">
+                <div class="drop-zone" id="vision-drop-zone">
+                  <div class="drop-zone-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                      <circle cx="9" cy="9" r="2" />
+                      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                    </svg>
+                  </div>
+                  <div class="drop-zone-title">Select or Drop Image</div>
+                  <div class="drop-zone-sub">PNG, JPG, WEBP supported</div>
+                  <input type="file" id="vision-file-input" accept="image/*" style="display:none">
+                </div>
+                <div class="form-group" style="margin-top:14px">
+                  <label class="form-label">Analysis Prompt</label>
+                  <input type="text" id="vision-prompt-input" class="form-input"
+                    placeholder="Explain this diagram architecture and information flow.">
+                </div>
+                <button class="btn btn-primary" id="vision-analyze-btn" style="width:100%">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  Analyze Visual Asset
+                </button>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div class="panel" style="flex:1">
+                <div class="panel-header">
+                  <div class="section-title">Image Preview</div>
+                </div>
+                <div class="panel-body">
+                  <div class="preview-box" id="vision-preview-box" style="min-height:160px">
+                    <span style="color:#94a3b8;font-size:13px">Image preview will appear here</span>
+                  </div>
+                </div>
+              </div>
+              <div class="panel" style="flex:2">
+                <div class="panel-header">
+                  <div class="section-title">Analysis Result</div>
+                </div>
+                <div class="panel-body">
+                  <div class="output-box" id="vision-output-box" style="min-height:180px">Analysis results will be
+                    displayed here...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════
+           TAB: FORECASTING
+      ════════════════════════════════ -->
+        <section id="tab-forecast" class="tab-pane">
+          <div class="page-hero">
+            <h2>Forecasting Studio</h2>
+            <p>Autoregressive predictive projections &amp; out-of-sample validation (MAE, RMSE, MAPE)</p>
+          </div>
+          <div class="data-analysis-layout">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="section-title">Forecast Configuration</div>
+              </div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label class="form-label">Dataset Path</label>
+                  <input type="text" id="fc-file-input" class="form-input" placeholder="data/uploads/timeseries.csv">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Date Column</label>
+                  <input type="text" id="fc-date-col" class="form-input" placeholder="e.g. date, Date, timestamp">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Target Metric Column</label>
+                  <input type="text" id="fc-target-col" class="form-input" placeholder="e.g. sales, revenue, demand">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Forecast Horizon (Periods)</label>
+                  <input type="number" id="fc-horizon-input" class="form-input" value="7" min="1" max="60">
+                </div>
+                <button class="btn btn-primary" id="run-forecast-btn" style="width:100%">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                    <polyline points="16 7 22 7 22 13" />
+                  </svg>
+                  Generate Forecast
+                </button>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="section-title">Forecast Projections &amp; Metrics</div>
+              </div>
+              <div class="panel-body">
+                <div class="output-box" id="forecast-results-box" style="min-height:360px">Projections and evaluated
+                  metrics (MAE, RMSE, MAPE) will appear here.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════
+           TAB: REPORTS
+      ════════════════════════════════ -->
+        <section id="tab-reports" class="tab-pane">
+          <div class="page-hero">
+            <h2>Reports &amp; Quiz Generator</h2>
+            <p>Generate executive intelligence reports and MCQ assessments</p>
+          </div>
+          <div class="reports-layout">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="section-title">📝 Quiz &amp; MCQ Generator</div>
+              </div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label class="form-label">Topic / Document Section</label>
+                  <input type="text" id="quiz-topic-input" class="form-input"
+                    placeholder="e.g. Supervised learning and loss functions">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Number of Questions</label>
+                  <input type="number" id="quiz-count-input" class="form-input" value="5" min="1" max="20">
+                </div>
+                <button class="btn btn-primary" id="generate-quiz-btn" style="width:100%">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                    <path d="M12 17h.01" />
+                  </svg>
+                  Generate Assessment
+                </button>
+                <div class="output-box" id="quiz-output-box" style="margin-top:14px;min-height:160px"></div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div class="section-title">📑 Executive Intelligence Report</div>
+              </div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label class="form-label">Report Topic</label>
+                  <input type="text" id="report-topic-input" class="form-input"
+                    placeholder="e.g. Enterprise AI Adoption and Multimodal RAG">
+                </div>
+                <button class="btn btn-primary" id="generate-report-btn" style="width:100%">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                      d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+                  </svg>
+                  Generate Formal Report
+                </button>
+                <div class="output-box" id="report-output-box" style="margin-top:14px;min-height:160px"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════
+           TAB: ACTIVITY
+      ════════════════════════════════ -->
+        <section id="tab-activity" class="tab-pane">
+          <div class="page-hero">
+            <h2>Activity Log</h2>
+            <p>System events, uploads, analysis runs and agent executions</p>
+          </div>
+          <div class="activity-filters">
+            <button class="filter-chip active">All</button>
+            <button class="filter-chip">Documents</button>
+            <button class="filter-chip">AI Analysis</button>
+            <button class="filter-chip">Agents</button>
+            <button class="filter-chip">Reports</button>
+          </div>
+          <div class="panel">
+            <div class="panel-body">
+              <div class="activity-list" id="activity-full-list">
+                <div class="activity-item">
+                  <div class="activity-icon blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                    </svg></div>
+                  <div class="activity-body">
+                    <div class="activity-title">Sales Report 2024.xlsx uploaded</div>
+                    <div class="activity-desc">Analyzed by Data Agent — 1,248 chunks indexed</div>
+                  </div>
+                  <div class="activity-time">2h ago</div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-icon purple"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                    </svg></div>
+                  <div class="activity-body">
+                    <div class="activity-title">Research Paper.pdf summarized</div>
+                    <div class="activity-desc">Document Agent generated summary and indexed 856 chunks</div>
+                  </div>
+                  <div class="activity-time">4h ago</div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-icon green"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" x2="18" y1="20" y2="10" />
+                      <line x1="12" x2="12" y1="20" y2="4" />
+                      <line x1="6" x2="6" y1="20" y2="14" />
+                    </svg></div>
+                  <div class="activity-body">
+                    <div class="activity-title">Product Data.csv analyzed</div>
+                    <div class="activity-desc">Business Intelligence KPIs extracted by BI Agent</div>
+                  </div>
+                  <div class="activity-time">6h ago</div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-icon orange"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path
+                        d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+                    </svg></div>
+                  <div class="activity-body">
+                    <div class="activity-title">Executive Report generated</div>
+                    <div class="activity-desc">Report Agent created AI Adoption Strategy report</div>
+                  </div>
+                  <div class="activity-time">1d ago</div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-icon blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                      <polyline points="16 7 22 7 22 13" />
+                    </svg></div>
+                  <div class="activity-body">
+                    <div class="activity-title">Forecast generated for Sales data</div>
+                    <div class="activity-desc">30-period time series forecast with MAE, RMSE, MAPE metrics</div>
+                  </div>
+                  <div class="activity-time">1d ago</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════
+           TAB: SETTINGS
+      ════════════════════════════════ -->
+        <section id="tab-settings" class="tab-pane">
+          <div class="settings-header-banner">
+            <div class="settings-header-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </div>
+            <div class="settings-header-text">
+              <h2>Settings</h2>
+              <p>Configure your MultiMind AI workspace, profile, AI models, and preferences.</p>
+            </div>
+          </div>
+
+          <div class="settings-layout">
+            <!-- LEFT: Settings Navigation Card -->
+            <div class="settings-sidebar-card">
+              <nav class="settings-nav-menu" id="settings-nav-menu">
+                <button class="settings-menu-item active" data-tab-target="general">
+                  <span class="settings-menu-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                  </span>
+                  <div class="settings-menu-text">
+                    <div class="settings-menu-title">General</div>
+                    <div class="settings-menu-sub">Profile & workspace</div>
+                  </div>
+                </button>
+
+                <button class="settings-menu-item" data-tab-target="models">
+                  <span class="settings-menu-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14" />
+                    </svg>
+                  </span>
+                  <div class="settings-menu-text">
+                    <div class="settings-menu-title">AI Models</div>
+                    <div class="settings-menu-sub">Model & inference</div>
+                  </div>
+                </button>
+
+                <button class="settings-menu-item" data-tab-target="rag">
+                  <span class="settings-menu-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <ellipse cx="12" cy="5" rx="9" ry="3" />
+                      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                    </svg>
+                  </span>
+                  <div class="settings-menu-text">
+                    <div class="settings-menu-title">RAG Pipeline</div>
+                    <div class="settings-menu-sub">Retrieval & knowledge</div>
+                  </div>
+                </button>
+
+                <button class="settings-menu-item" data-tab-target="integrations">
+                  <span class="settings-menu-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="8" height="8" x="3" y="3" rx="2" />
+                      <path d="M7 11v4a2 2 0 0 0 2 2h4" />
+                      <rect width="8" height="8" x="13" y="13" rx="2" />
+                    </svg>
+                  </span>
+                  <div class="settings-menu-text">
+                    <div class="settings-menu-title">Integrations <span class="badge-mini">Planned</span></div>
+                    <div class="settings-menu-sub">Connected services</div>
+                  </div>
+                </button>
+
+                <button class="settings-menu-item" data-tab-target="apikeys">
+                  <span class="settings-menu-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="7.5" cy="15.5" r="5.5" />
+                      <path d="m21 2-9.6 9.6M15.5 7.5l3 3M18.5 4.5l3 3" />
+                    </svg>
+                  </span>
+                  <div class="settings-menu-text">
+                    <div class="settings-menu-title">API Keys</div>
+                    <div class="settings-menu-sub">Tokens & credentials</div>
+                  </div>
+                </button>
+
+                <button class="settings-menu-item" data-tab-target="security">
+                  <span class="settings-menu-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                  </span>
+                  <div class="settings-menu-text">
+                    <div class="settings-menu-title">Security</div>
+                    <div class="settings-menu-sub">Account & session</div>
+                  </div>
+                </button>
+              </nav>
+            </div>
+
+            <!-- RIGHT: Settings Panels Container -->
+            <div class="settings-content-wrapper">
+
+              <!-- 1. GENERAL SETTINGS PANEL -->
+              <div class="settings-tab-panel active" id="settings-tab-general">
+
+                <!-- Profile Card -->
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <div class="settings-card-title-group">
+                      <h3>Profile</h3>
+                      <p>Manage your personal information and how you appear in MultiMind AI.</p>
+                    </div>
+                    <span class="settings-tier-pill">Active Member</span>
+                  </div>
+
+                  <div class="settings-card-body">
+                    <!-- Avatar Preview Block -->
+                    <div class="settings-profile-badge-row">
+                      <div class="settings-avatar-large" id="settings-avatar-preview">U</div>
+                      <div class="settings-avatar-meta">
+                        <div class="settings-user-preview-name" id="settings-display-name-header">User</div>
+                        <div class="settings-user-preview-email" id="settings-display-email-header">user@multimind.ai
+                        </div>
+                        <span class="settings-status-indicator"><span class="dot-status-green"></span> Authenticated
+                          Session</span>
+                      </div>
+                    </div>
+
+                    <div class="settings-form-grid">
+                      <div class="form-group">
+                        <label class="form-label" for="settings-user-name">Full Name <span
+                            class="required-star">*</span></label>
+                        <input id="settings-user-name" type="text" class="form-input" placeholder="Your full name"
+                          autocomplete="name">
+                        <span class="form-hint">Displayed in chat conversations, top navigation, and workspace
+                          actions.</span>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label" for="settings-user-email">Email Address</label>
+                        <div class="input-icon-wrap">
+                          <input id="settings-user-email" type="email" class="form-input" readonly>
+                          <span class="input-verified-badge">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              stroke-width="2.5">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                            Verified
+                          </span>
+                        </div>
+                        <span class="form-hint">Primary account identifier associated with your authentication
+                          token.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Workspace Card -->
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <div class="settings-card-title-group">
+                      <h3>Workspace</h3>
+                      <p>Workspace preferences and active environment configuration.</p>
+                    </div>
+                  </div>
+
+                  <div class="settings-card-body">
+                    <div class="settings-form-grid">
+                      <div class="form-group">
+                        <label class="form-label" for="settings-workspace-name">Workspace Name</label>
+                        <input id="settings-workspace-name" type="text" class="form-input"
+                          value="MultiMind AI Workspace">
+                        <span class="form-hint">Custom title for your organization or team intelligence
+                          environment.</span>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label" for="settings-environment-info">Active Environment</label>
+                        <input id="settings-environment-info" type="text" class="form-input" value="development"
+                          readonly>
+                        <span class="form-hint">Backend runtime mode loaded from server settings.</span>
+                      </div>
+
+                      <div class="form-group form-group-full">
+                        <label class="form-label" for="settings-api-endpoint">API Endpoint</label>
+                        <div class="input-action-group">
+                          <input id="settings-api-endpoint" type="text" class="form-input" readonly>
+                          <button type="button" class="btn btn-outline btn-sm" id="btn-copy-api-url"
+                            title="Copy endpoint">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              stroke-width="2">
+                              <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                            </svg>
+                            Copy
+                          </button>
+                          <a href="/docs" target="_blank" class="btn btn-outline btn-sm">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              stroke-width="2">
+                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                              <polyline points="15 3 21 3 21 9" />
+                              <line x1="10" y1="14" x2="21" y2="3" />
+                            </svg>
+                            View API Docs
+                          </a>
+                        </div>
+                        <span class="form-hint">Dynamic origin detected from current host. Hardcoded URLs are
+                          avoided.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="settings-actions-footer">
+                  <div class="settings-changes-badge" id="settings-unsaved-badge" style="display:none">
+                    <span class="dot-unsaved-pulse"></span>
+                    <span>Unsaved changes detected</span>
+                  </div>
+                  <div class="settings-footer-buttons">
+                    <button type="button" id="settings-cancel-btn" class="btn btn-outline">Cancel</button>
+                    <button type="button" id="settings-save-btn" class="btn btn-primary">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" />
+                        <polyline points="7 3 7 8 15 8" />
+                      </svg>
+                      <span>Save Changes</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- 2. AI MODELS PANEL -->
+              <div class="settings-tab-panel" id="settings-tab-models">
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <div class="settings-card-title-group">
+                      <h3>AI Configuration</h3>
+                      <p>Configure model selection, default reasoning agent, and inference parameters.</p>
+                    </div>
+                    <span class="settings-tier-pill" id="settings-llm-provider-badge">Mock Engine</span>
+                  </div>
+
+                  <div class="settings-card-body">
+                    <div class="settings-form-grid">
+                      <div class="form-group">
+                        <label class="form-label">Default AI Model</label>
+                        <select class="form-select" id="settings-default-model">
+                          <option value="gpt-4o-mini">GPT-4o Mini (Fast & Cost Efficient)</option>
+                          <option value="gpt-4o">GPT-4o (High Reasoning)</option>
+                          <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
+                          <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                        </select>
+                        <span class="form-hint">Used by the Orchestrator for RAG queries and agent routing.</span>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">Default Orchestrator Agent</label>
+                        <select class="form-select" id="settings-default-agent">
+                          <option value="orchestrator">MultiMind Orchestrator</option>
+                          <option value="document">Document Analysis Specialist</option>
+                          <option value="data">Data Analysis Specialist</option>
+                          <option value="forecast">Forecasting Specialist</option>
+                        </select>
+                        <span class="form-hint">Default agent selected when initiating new conversations.</span>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">Temperature: <strong id="settings-temp-val">0.2</strong></label>
+                        <input type="range" class="form-range" id="settings-temperature" min="0" max="1" step="0.05"
+                          value="0.2">
+                        <span class="form-hint">Lower values produce deterministic, factual answers.</span>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">Max Output Tokens</label>
+                        <select class="form-select" id="settings-max-tokens">
+                          <option value="1024">1,024 Tokens</option>
+                          <option value="2048" selected>2,048 Tokens (Recommended)</option>
+                          <option value="4096">4,096 Tokens (Long-form)</option>
+                        </select>
+                        <span class="form-hint">Maximum token generation length per inference request.</span>
+                      </div>
+
+                      <div class="form-group form-group-full">
+                        <label class="form-label">Response Style</label>
+                        <div class="settings-radio-cards">
+                          <label class="radio-card">
+                            <input type="radio" name="response-style" value="precise">
+                            <div class="radio-card-content">
+                              <strong>Precise & Concise</strong>
+                              <span>Direct answers with minimal elaboration.</span>
+                            </div>
+                          </label>
+                          <label class="radio-card active">
+                            <input type="radio" name="response-style" value="balanced" checked>
+                            <div class="radio-card-content">
+                              <strong>Balanced</strong>
+                              <span>Thorough explanation with key citations.</span>
+                            </div>
+                          </label>
+                          <label class="radio-card">
+                            <input type="radio" name="response-style" value="detailed">
+                            <div class="radio-card-content">
+                              <strong>Detailed & In-Depth</strong>
+                              <span>Exhaustive breakdowns and background context.</span>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="settings-actions-footer">
+                    <div class="settings-footer-buttons">
+                      <button type="button" id="settings-save-ai-btn" class="btn btn-primary">
+                        <span>Save AI Preferences</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. RAG PIPELINE PANEL -->
+              <div class="settings-tab-panel" id="settings-tab-rag">
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <div class="settings-card-title-group">
+                      <h3>RAG Configuration</h3>
+                      <p>Vector store parameters, semantic chunking, and similarity thresholds.</p>
+                    </div>
+                    <span class="settings-tier-pill success">Vector Store Active</span>
+                  </div>
+
+                  <div class="settings-card-body">
+                    <div class="settings-param-grid">
+                      <div class="param-box">
+                        <div class="param-label">Vector Store Type</div>
+                        <div class="param-value" id="rag-vector-type">Chroma (In-Memory)</div>
+                        <div class="param-sub">Path: ./data/vector_store</div>
+                      </div>
+
+                      <div class="param-box">
+                        <div class="param-label">Embedding Model</div>
+                        <div class="param-value" id="rag-embedding-model">text-embedding-3-small</div>
+                        <div class="param-sub">384-dimensional dense vectors</div>
+                      </div>
+
+                      <div class="param-box">
+                        <div class="param-label">Chunk Size</div>
+                        <div class="param-value" id="rag-chunk-size">600 tokens</div>
+                        <div class="param-sub">Optimal for multimodal document segments</div>
+                      </div>
+
+                      <div class="param-box">
+                        <div class="param-label">Chunk Overlap</div>
+                        <div class="param-value" id="rag-chunk-overlap">100 tokens</div>
+                        <div class="param-sub">Preserves context across chunk boundaries</div>
+                      </div>
+
+                      <div class="param-box">
+                        <div class="param-label">Top-K Retrieval</div>
+                        <div class="param-value" id="rag-top-k">4 chunks</div>
+                        <div class="param-sub">Retrieved per chat & analysis query</div>
+                      </div>
+
+                      <div class="param-box">
+                        <div class="param-label">Similarity Threshold</div>
+                        <div class="param-value" id="rag-threshold">0.35</div>
+                        <div class="param-sub">Minimum cosine similarity filter</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 4. INTEGRATIONS PANEL -->
+              <div class="settings-tab-panel" id="settings-tab-integrations">
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <div class="settings-card-title-group">
+                      <h3>Connected Integrations</h3>
+                      <p>Connect MultiMind AI with enterprise storage and collaboration channels.</p>
+                    </div>
+                  </div>
+
+                  <div class="settings-card-body">
+                    <div class="integrations-list">
+                      <div class="integration-item">
+                        <div class="integration-icon slack">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                              d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312z" />
+                          </svg>
+                        </div>
+                        <div class="integration-meta">
+                          <div class="integration-title">Slack Notifications & Agent Briefings</div>
+                          <div class="integration-desc">Stream AI analysis and forecast reports directly to your team
+                            Slack channels.</div>
+                        </div>
+                        <span class="badge-tag">Planned</span>
+                      </div>
+
+                      <div class="integration-item">
+                        <div class="integration-icon gdrive">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 2v20M2 12h20" />
+                          </svg>
+                        </div>
+                        <div class="integration-meta">
+                          <div class="integration-title">Google Drive Document Ingestion</div>
+                          <div class="integration-desc">Synchronize shared drives and auto-index PDFs, spreadsheets, and
+                            presentations.</div>
+                        </div>
+                        <span class="badge-tag">Planned</span>
+                      </div>
+
+                      <div class="integration-item">
+                        <div class="integration-icon notion">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 4v16h16V4H4zM8 8h8M8 12h8M8 16h5" />
+                          </svg>
+                        </div>
+                        <div class="integration-meta">
+                          <div class="integration-title">Notion Knowledge Base</div>
+                          <div class="integration-desc">Embed company wiki documentation directly into your local vector
+                            database.</div>
+                        </div>
+                        <span class="badge-tag">Planned</span>
+                      </div>
+
+                      <div class="integration-item">
+                        <div class="integration-icon postgres">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <ellipse cx="12" cy="5" rx="9" ry="3" />
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                          </svg>
+                        </div>
+                        <div class="integration-meta">
+                          <div class="integration-title">PostgreSQL Database Connection</div>
+                          <div class="integration-desc">Connect production PostgreSQL database via DATABASE_URL in .env
+                            configuration.</div>
+                        </div>
+                        <span class="badge-tag success">Supported in .env</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 5. API KEYS PANEL -->
+              <div class="settings-tab-panel" id="settings-tab-apikeys">
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <div class="settings-card-title-group">
+                      <h3>API Key Configuration</h3>
+                      <p>Manage external LLM provider credentials and authorization tokens.</p>
+                    </div>
+                  </div>
+
+                  <div class="settings-card-body">
+                    <div class="settings-form-grid">
+                      <div class="form-group form-group-full">
+                        <label class="form-label">LLM Provider API Key</label>
+                        <div class="input-action-group">
+                          <input id="settings-llm-api-key" type="password" class="form-input" placeholder="sk-..."
+                            value="••••••••••••••••••••••••••••••••">
+                          <button type="button" class="btn btn-outline btn-sm"
+                            id="btn-toggle-key-visibility">Show</button>
+                        </div>
+                        <span class="form-hint">Used when switching LLM_PROVIDER from mock to OpenAI, Groq, or Gemini in
+                          .env.</span>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">JWT Token Secret</label>
+                        <input type="text" class="form-input" value="Configured (HS256 active)" readonly>
+                        <span class="form-hint">Internal cryptographic signature for user session tokens.</span>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label">Token Validity</label>
+                        <input type="text" class="form-input" value="1,440 minutes (24 hours)" readonly>
+                        <span class="form-hint">Session expiration duration from ACCESS_TOKEN_EXPIRE_MINUTES.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 6. SECURITY PANEL -->
+              <div class="settings-tab-panel" id="settings-tab-security">
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <div class="settings-card-title-group">
+                      <h3>Authentication & Account Security</h3>
+                      <p>Manage your active authenticated session and switch user accounts.</p>
+                    </div>
+                    <span class="settings-tier-pill">Session Active</span>
+                  </div>
+
+                  <div class="settings-card-body">
+                    <div class="security-info-box">
+                      <div class="security-info-row">
+                        <span>Logged In As:</span>
+                        <strong id="security-user-name">User</strong>
+                      </div>
+                      <div class="security-info-row">
+                        <span>Account Email:</span>
+                        <code id="security-user-email">user@multimind.ai</code>
+                      </div>
+                      <div class="security-info-row">
+                        <span>Authentication Scheme:</span>
+                        <span>Bearer JWT (OAuth2PasswordBearer)</span>
+                      </div>
+                    </div>
+
+                    <div class="security-actions-title">Fast Switch / Test User Accounts</div>
+                    <p class="form-hint" style="margin-bottom:12px">Easily test multi-user isolation by switching
+                      between accounts or creating a new user:</p>
+
+                    <div class="test-users-grid" id="test-users-container">
+                      <!-- Populated dynamically with users from database -->
+                    </div>
+
+                    <div class="security-buttons-row">
+                      <button type="button" class="btn btn-outline" id="btn-open-auth-modal">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                          <circle cx="9" cy="7" r="4" />
+                          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        Sign In with Another Account
+                      </button>
+                      <button type="button" class="btn btn-outline danger" id="btn-security-logout">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                          <polyline points="16 17 21 12 16 7" />
+                          <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                        Log Out
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- AUTH MODAL (Sign In / Register / Switch Account) -->
+        <div class="auth-modal-overlay" id="auth-modal" style="display:none">
+          <div class="auth-modal-card">
+            <div class="auth-modal-header">
+              <div class="auth-modal-title">
+                <div class="brand-icon" style="width:28px;height:28px;border-radius:7px">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <circle cx="12" cy="12" r="2" />
+                    <path
+                      d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                  </svg>
+                </div>
+                <h3>MultiMind AI Account</h3>
+              </div>
+              <button type="button" class="modal-close-btn" id="btn-close-auth-modal" aria-label="Close">✕</button>
+            </div>
+
+            <div class="auth-tabs-row">
+              <button type="button" class="auth-tab-btn active" id="tab-btn-signin">Sign In</button>
+              <button type="button" class="auth-tab-btn" id="tab-btn-register">Create Account</button>
+            </div>
+
+            <!-- Sign In Form -->
+            <form id="form-auth-signin" class="auth-form-content">
+              <div class="form-group">
+                <label class="form-label" for="auth-signin-email">Email Address</label>
+                <input type="email" id="auth-signin-email" class="form-input" placeholder="e.g. user@multimind.ai"
+                  required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="auth-signin-password">Password</label>
+                <input type="password" id="auth-signin-password" class="form-input" placeholder="••••••••" required>
+              </div>
+              <div class="auth-error-msg" id="auth-signin-error" style="display:none"></div>
+              <button type="submit" class="btn btn-primary btn-block" id="btn-submit-signin">Sign In</button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="form-auth-register" class="auth-form-content" style="display:none">
+              <div class="form-group">
+                <label class="form-label" for="auth-register-name">Full Name <span
+                    class="required-star">*</span></label>
+                <input type="text" id="auth-register-name" class="form-input" placeholder="e.g. Ali Khan" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="auth-register-email">Email Address <span
+                    class="required-star">*</span></label>
+                <input type="email" id="auth-register-email" class="form-input" placeholder="e.g. ali@multimind.ai"
+                  required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="auth-register-password">Password <span
+                    class="required-star">*</span></label>
+                <input type="password" id="auth-register-password" class="form-input" placeholder="Create password"
+                  required>
+              </div>
+              <div class="auth-error-msg" id="auth-register-error" style="display:none"></div>
+              <button type="submit" class="btn btn-primary btn-block" id="btn-submit-register">Create Account</button>
+            </form>
+
+            <div class="auth-modal-divider"><span>or select test user</span></div>
+            <div class="auth-quick-users" id="auth-quick-users-list">
+              <!-- Dynamic 1-click test users -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TOAST NOTIFICATION CONTAINER -->
+        <div class="toast-container" id="toast-container"></div>
+
+      </main><!-- end page-content -->
+    </div><!-- end main-wrapper -->
+  </div><!-- end app-layout -->
+
+  <script src="/static/app.js"></script>
+</body>
+
+</html>
