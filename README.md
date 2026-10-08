@@ -2,153 +2,203 @@
 
 **A multimodal RAG, multi-agent, and business-intelligence platform built on FastAPI.**
 
-MultiMind AI ingests documents (PDF, DOCX, TXT, CSV, Excel, images), indexes them for grounded question answering with citations, and routes user requests to specialised agents for document analysis, tabular data analysis, KPI computation, time-series forecasting, report generation, and more. A single-page web dashboard is served by the same FastAPI process.
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python\&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi\&logoColor=white)
+![Uvicorn](https://img.shields.io/badge/Uvicorn-499848?logo=uvicorn\&logoColor=white)
+![Pydantic](https://img.shields.io/badge/Pydantic-v2-E92063?logo=pydantic\&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.x-D71F00?logo=sqlalchemy\&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite\&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-Vector%20Store-013243?logo=numpy\&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-BI-150458?logo=pandas\&logoColor=white)
+![Scikit-learn](https://img.shields.io/badge/scikit--learn-ML-F7931E?logo=scikit-learn\&logoColor=white)
+![NetworkX](https://img.shields.io/badge/NetworkX-GraphRAG-FF6F00)
+![Pytest](https://img.shields.io/badge/Pytest-Testing-0A9EDC?logo=pytest\&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker\&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=github-actions\&logoColor=white)
+![Vanilla JS](https://img.shields.io/badge/Frontend-Vanilla%20JavaScript-F7DF1E?logo=javascript\&logoColor=black)
 
-> **Project status: working prototype / portfolio project.** The core pipeline runs end-to-end and the test suite passes, but several parts are deliberately lightweight (see [Limitations](#limitations) and [Project Status](#project-status)). This README documents what the code actually does today; planned work is listed separately under the [Roadmap](#roadmap).
+> **Project Status:** Working prototype / portfolio project.
 
----
+MultiMind AI ingests documents and datasets, indexes them for grounded question answering with citations, and routes requests to specialized agents for document analysis, data analysis, business intelligence, forecasting, reports, quizzes, image analysis, and more.
 
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Features at a Glance](#features-at-a-glance)
-3. [System Architecture](#system-architecture)
-4. [Multi-Agent Workflow](#multi-agent-workflow)
-5. [Document Intelligence & RAG](#document-intelligence--rag)
-6. [GraphRAG](#graphrag)
-7. [Business Intelligence](#business-intelligence)
-8. [Machine Learning](#machine-learning)
-9. [Forecasting](#forecasting)
-10. [Reports, Quizzes & Image Analysis](#reports-quizzes--image-analysis)
-11. [Web Dashboard](#web-dashboard)
-12. [Technology Stack](#technology-stack)
-13. [Project Structure](#project-structure)
-14. [Database](#database)
-15. [Authentication & Security](#authentication--security)
-16. [Configuration](#configuration)
-17. [Installation & Running](#installation--running)
-18. [Docker](#docker)
-19. [API Reference](#api-reference)
-20. [Testing](#testing)
-21. [CI/CD](#cicd)
-22. [Troubleshooting](#troubleshooting)
-23. [Limitations](#limitations)
-24. [Roadmap](#roadmap)
-25. [Project Status](#project-status)
-26. [Contributing](#contributing)
-27. [Security Reporting](#security-reporting)
-28. [License](#license)
+The application uses a **single FastAPI process** to serve both the backend API and the web dashboard.
 
 ---
 
-## Overview
+## 📋 Table of Contents
 
-Most dashboards only visualise data you already understand, and most chatbots only talk. MultiMind AI sits in between: it keeps **your own documents and datasets** as the source of truth and lets you interrogate them in natural language, while deterministic code (pandas, scikit-learn) performs the actual calculations.
-
-**What it does**
-
-- Accepts uploads, validates them, extracts text and structure, chunks the content, embeds it, and stores it in a local vector index.
-- Answers questions from retrieved context with file, page, and section citations, and falls back to *"I could not find this information in the uploaded documents."* when nothing relevant is retrieved.
-- Routes each chat message to one of eight specialised agents (research, document, vision, data, quiz, report, business-intelligence, forecasting) or to a safe arithmetic calculator.
-- Computes revenue, cost, profit, margin, average order value, and growth from tabular data with pandas, then turns them into rule-based insights.
-- Trains and evaluates scikit-learn models (classification, regression, K-Means clustering, Isolation Forest anomaly detection) on uploaded datasets.
-- Produces lag-feature time-series forecasts with held-out error metrics.
-- Persists conversations, documents, chunks, analyses, forecasts, and reports in a relational database.
-
-**Who it is for:** developers and students exploring RAG and agent architectures, and reviewers evaluating an AI/ML portfolio project. It is not presented as a finished enterprise product.
-
-**Offline by default.** With the default `LLM_PROVIDER=mock` and `EMBEDDING_PROVIDER=mock`, the whole system runs locally with no API keys. In that mode, text generation uses a built-in rule-based "local reasoner". Cited RAG answers, KPIs, forecasts, ML runs, and the calculator work fully offline; summaries, quizzes, reports, and free-form data Q&A need a real LLM (see [Limitations](#limitations) for exactly what mock mode does). Setting `LLM_PROVIDER=openai` with an API key sends generation requests to OpenAI.
-
----
-
-## Features at a Glance
-
-| Area | Status | Notes |
-|---|---|---|
-| Document ingestion (PDF, DOCX, TXT, CSV, XLSX/XLS, PNG/JPG/JPEG/WEBP) | Implemented | Validation, extraction, structure-aware chunking |
-| RAG with citations | Implemented | Cosine search + hybrid rerank, document-ID filter, citation metadata |
-| Vector store | Implemented | Custom NumPy store persisted to disk (not ChromaDB/Qdrant) |
-| Multi-agent routing | Implemented | Keyword-based router → 1 of 8 agents, plus calculator |
-| Conversation memory | Implemented | Stored per `session_id`; simple pronoun resolution |
-| Business KPIs & insights | Implemented | Revenue, cost, gross profit, margin, AOV, MoM growth, top-N breakdown |
-| ML on uploaded data | Implemented | Classification, regression, K-Means, Isolation Forest |
-| Time-series forecasting | Implemented | Ridge or Random Forest on lag/calendar features |
-| Report generation | Partial | Saved as Markdown in the DB; needs `LLM_PROVIDER=openai` — in default mock mode it returns a "not found" message |
-| Quiz (MCQ) generation | Partial | Needs `LLM_PROVIDER=openai`; mock mode returns fixed sample questions unrelated to your content |
-| Image analysis | Partial | Image metrics always; OCR only if `pytesseract` is installed; description needs a real LLM |
-| GraphRAG | Partial | Graph store, extractors, and hybrid retriever exist; ingestion does not populate the graph yet |
-| JWT authentication | Partial | Login/register/profile work; most data endpoints are not protected |
-| Role-based access control | Not implemented | `is_admin` column exists but is not enforced |
-| Customer segmentation (RFM), anomaly severity levels, fact-checker agent, web research | Not implemented | See [Roadmap](#roadmap) |
+* [Overview](#overview)
+* [Features](#features)
+* [System Architecture](#system-architecture)
+* [Multi-Agent Workflow](#multi-agent-workflow)
+* [Document Intelligence & RAG](#document-intelligence--rag)
+* [GraphRAG](#graphrag)
+* [Business Intelligence](#business-intelligence)
+* [Machine Learning](#machine-learning)
+* [Forecasting](#forecasting)
+* [Reports, Quizzes & Image Analysis](#reports-quizzes--image-analysis)
+* [Web Dashboard](#web-dashboard)
+* [Technology Stack](#technology-stack)
+* [Project Structure](#project-structure)
+* [Database](#database)
+* [Authentication & Security](#authentication--security)
+* [Configuration](#configuration)
+* [Installation](#installation)
+* [Running the Application](#running-the-application)
+* [Docker](#docker)
+* [API Reference](#api-reference)
+* [Testing](#testing)
+* [CI/CD](#cicd)
+* [Troubleshooting](#troubleshooting)
+* [Limitations](#limitations)
+* [Roadmap](#roadmap)
+* [Project Status](#project-status)
+* [Contributing](#contributing)
+* [Security Reporting](#security-reporting)
+* [License](#license)
 
 ---
 
-## System Architecture
+# 🔎 Overview
+
+Most dashboards only visualize data you already understand, while most chatbots simply talk about information.
+
+**MultiMind AI sits between the two.**
+
+It keeps your own documents and datasets as the source of truth and lets you interact with them using natural language. Deterministic Python code performs calculations, analytics, machine-learning tasks, and forecasting.
+
+### What MultiMind AI Does
+
+* 📄 Uploads PDF, DOCX, TXT, CSV, Excel, and image files
+* 🔍 Extracts and chunks document content
+* 🧠 Generates embeddings and stores vectors locally
+* 💬 Answers questions using Retrieval-Augmented Generation
+* 📚 Provides file, page, and section citations
+* 🤖 Routes requests to specialized AI agents
+* 📊 Calculates business KPIs using pandas
+* 🧮 Performs safe arithmetic calculations
+* 🤖 Runs machine-learning models using scikit-learn
+* 📈 Performs time-series forecasting
+* 🕸️ Provides a lightweight GraphRAG layer
+* 📝 Generates reports and quizzes
+* 🖼️ Performs image analysis and optional OCR
+* 💾 Persists application data using SQLAlchemy and SQLite
+* 🐳 Supports Docker and Docker Compose
+* 🧪 Includes an offline pytest test suite
+
+The system is designed primarily as a **developer/student learning project and AI/ML portfolio project**, rather than a finished enterprise product.
+
+---
+
+# ✨ Features
+
+| Feature                    | Status            |
+| -------------------------- | ----------------- |
+| PDF / DOCX / TXT ingestion | ✅ Implemented     |
+| CSV / Excel ingestion      | ✅ Implemented     |
+| Image ingestion            | ✅ Implemented     |
+| RAG with citations         | ✅ Implemented     |
+| Custom NumPy vector store  | ✅ Implemented     |
+| Hybrid reranking           | ✅ Implemented     |
+| Multi-agent routing        | ✅ Implemented     |
+| Conversation memory        | ✅ Implemented     |
+| Business intelligence      | ✅ Implemented     |
+| Machine learning           | ✅ Implemented     |
+| Time-series forecasting    | ✅ Implemented     |
+| JWT authentication         | 🟡 Partial        |
+| GraphRAG                   | 🟡 Partial        |
+| Report generation          | 🟡 Partial        |
+| Quiz generation            | 🟡 Partial        |
+| Image analysis             | 🟡 Partial        |
+| Role-based access control  | ❌ Not implemented |
+| Web research agent         | ❌ Planned         |
+| Fact-checking agent        | ❌ Planned         |
+
+---
+
+# 🏗️ System Architecture
 
 ```mermaid
 flowchart TD
-    UI["Web dashboard<br/>static HTML / CSS / JS"] -->|"REST (JSON)"| API["FastAPI application<br/>app/main.py"]
 
-    API --> R_AUTH["routes_auth"]
-    API --> R_DOC["routes_documents"]
-    API --> R_CHAT["routes_chat"]
-    API --> R_AGENTS["routes_agents"]
-    API --> R_ANALYSIS["routes_analysis"]
-    API --> R_HEALTH["routes_health"]
+    UI["Web Dashboard<br/>HTML / CSS / JavaScript"]
+        --> API["FastAPI Application"]
 
-    R_DOC --> ING["Ingestion pipeline<br/>app/rag/ingestion.py"]
-    R_CHAT --> ORCH["Orchestrator agent"]
-    R_AGENTS --> TOOLS["Tool registry"]
-    R_ANALYSIS --> ML["ML / BI / Forecasting modules"]
+    API --> AUTH["Authentication Routes"]
+    API --> DOC["Document Routes"]
+    API --> CHAT["Chat Routes"]
+    API --> AGENTS["Agent Routes"]
+    API --> ANALYSIS["Analysis Routes"]
+    API --> HEALTH["Health Routes"]
 
-    ORCH --> AGENTS["8 specialised agents"]
-    AGENTS --> TOOLS
-    TOOLS --> RET["RAG retriever + reranker"]
+    DOC --> ING["Document Ingestion"]
+    CHAT --> ORCH["Orchestrator Agent"]
+    AGENTS --> TOOLS["Tool Registry"]
+    ANALYSIS --> ML["ML / BI / Forecasting"]
+
+    ORCH --> SPECIALIZED["8 Specialized Agents"]
+
+    SPECIALIZED --> TOOLS
+    TOOLS --> RAG["RAG Retriever"]
     TOOLS --> ML
-    TOOLS --> LLM["LLM service<br/>mock or OpenAI"]
+    TOOLS --> LLM["LLM Service"]
 
-    ING --> MM["Multimodal processors"]
-    ING --> VS[("Vector store<br/>NumPy + JSON on disk")]
-    ING --> DB[("SQL database<br/>SQLite default")]
-    RET --> VS
-    R_AGENTS --> GR["GraphRAG retriever"]
-    GR --> KG[("Knowledge graph<br/>NetworkX JSON")]
-    GR --> RET
+    ING --> PROCESSORS["Multimodal Processors"]
+    ING --> VECTOR["NumPy Vector Store"]
+    ING --> DB["SQLite Database"]
 
-    R_CHAT --> DB
-    R_ANALYSIS --> DB
+    RAG --> VECTOR
+
+    AGENTS --> GRAPH["GraphRAG"]
+    GRAPH --> KG["NetworkX Knowledge Graph"]
+
+    CHAT --> DB
+    ANALYSIS --> DB
 ```
 
-**Key design choices**
+### Key Design Decisions
 
-- **Single deployable process.** FastAPI serves both the JSON API and the static dashboard.
-- **Zero-dependency local run.** SQLite, a file-backed vector index, and a mock LLM/embedding provider mean no external services are required.
-- **Routes are mounted twice.** Every router is available at the root (e.g. `/chat`) and under `/api` (e.g. `/api/chat`). The auth router is additionally mounted at `/user`.
+* **Single deployable process** — FastAPI serves the API and dashboard.
+* **Offline by default** — SQLite, NumPy vector storage, mock embeddings, and mock LLM allow local execution.
+* **No Node.js required** for the backend/frontend.
+* **No external vector database required.**
+* API routers are available at both root paths and `/api` paths.
 
 ---
 
-## Multi-Agent Workflow
+# 🤖 Multi-Agent Workflow
 
-The `OrchestratorAgent` (`app/agents/orchestrator.py`) handles every `/chat` request in this order:
+The `OrchestratorAgent` handles `/chat` requests.
 
 ```mermaid
 flowchart TD
-    A["POST /chat"] --> B["Sanitise prompt<br/>(injection patterns)"]
-    B --> C["Load last 20 messages<br/>for session_id"]
-    C --> D["Resolve pronouns<br/>using previous user turn"]
-    D --> E{"Pure arithmetic<br/>expression?"}
-    E -->|yes| F["Calculator tool<br/>(safe AST evaluator)"]
-    E -->|no| G["Keyword intent classifier"]
-    G --> H{"Selected agent"}
-    H --> Q["Quiz agent"]
-    H --> V["Vision agent"]
-    H --> FC["Forecasting agent"]
-    H --> BI["BI agent"]
-    H --> DA["Data agent"]
-    H --> RP["Report agent"]
-    H --> DC["Document agent"]
-    H --> RS["Research agent (default)"]
-    F --> Z["Save reply + sources + agent name"]
+
+    A["POST /chat"]
+    --> B["Prompt Sanitization"]
+
+    B --> C["Load Conversation Memory"]
+
+    C --> D["Resolve Pronouns"]
+
+    D --> E{"Arithmetic?"}
+
+    E -->|Yes| F["Safe Calculator"]
+
+    E -->|No| G["Keyword Intent Router"]
+
+    G --> H{"Agent"}
+
+    H --> Q["Quiz Agent"]
+    H --> V["Vision Agent"]
+    H --> FC["Forecasting Agent"]
+    H --> BI["BI Agent"]
+    H --> DA["Data Agent"]
+    H --> RP["Report Agent"]
+    H --> DC["Document Agent"]
+    H --> RS["Research Agent"]
+
+    F --> Z["Save Response"]
+
     Q --> Z
     V --> Z
     FC --> Z
@@ -159,760 +209,941 @@ flowchart TD
     RS --> Z
 ```
 
-### Routing rules
+### Available Agents
 
-Routing is **deterministic keyword matching**, evaluated top to bottom. The first match wins; there is no LLM-based planner.
+| Agent                | Purpose                    |
+| -------------------- | -------------------------- |
+| 🔬 Research Agent    | RAG-based grounded Q&A     |
+| 📄 Document Agent    | Summaries and comparisons  |
+| 👁️ Vision Agent     | Image analysis             |
+| 📊 Data Agent        | CSV/Excel analysis         |
+| 📝 Quiz Agent        | MCQ generation             |
+| 📑 Report Agent      | Structured reports         |
+| 💼 BI Agent          | Business KPIs and insights |
+| 📈 Forecasting Agent | Future-value forecasting   |
 
-| Order | Agent | Triggered by keywords such as |
-|---|---|---|
-| 1 | `quiz_agent` | quiz, mcq, multiple choice, create questions |
-| 2 | `vision_agent` | diagram, image, screenshot, visual, picture, photo |
-| 3 | `forecasting_agent` | forecast, predict next, future sales, time series |
-| 4 | `bi_agent` | kpi, profit margin, gross profit, sales growth, aov |
-| 5 | `data_agent` | excel, csv, dataset, highest revenue, top product, statistics |
-| 6 | `report_agent` | generate report, create report, executive report |
-| 7 | `document_agent` | summarize, summary of, compare these |
-| 8 | `research_agent` | everything else (RAG question answering) |
-
-### The agents
-
-| Agent | Purpose | Tools / services used | Output |
-|---|---|---|---|
-| **Research** | Grounded Q&A over ingested documents | `document_search` → RAG prompt → LLM | Answer + citations |
-| **Document** | Summaries and comparisons | `document_search`, `summarize_document`, LLM | Summary / comparison + citations |
-| **Vision** | Interpret an uploaded image | `analyze_image` (image metrics, optional OCR, LLM) | Description |
-| **Data** | Profile CSV/Excel files | `analyze_csv` / `analyze_excel`, LLM | Answer grounded in dataset statistics (requires a real LLM; mock mode returns a generic reply) |
-| **Quiz** | Multiple-choice questions | `document_search`, `generate_quiz` | MCQs (max 20) |
-| **Report** | Structured report | `document_search`, `generate_report` | Report text |
-| **Business Intelligence** | KPIs and insights | `business_analysis` (pandas) | KPI list + rule-based insights |
-| **Forecasting** | 7-period forecast | `forecasting` (scikit-learn) | Projected values + MAE/RMSE/MAPE |
-
-Agents do not call each other; each request is handled by exactly one agent, sequentially. Data, BI, forecasting, and vision agents pick their input file from the upload directory (see [Limitations](#limitations)).
-
-### Tool registry
-
-`app/agents/tools.py` exposes ten tools: `document_search`, `summarize_document`, `analyze_image`, `analyze_csv`, `analyze_excel`, `calculator`, `generate_quiz`, `generate_report`, `business_analysis`, and `forecasting`. The calculator parses expressions with Python's `ast` module and only permits arithmetic operators, so no `eval` is involved.
-
-### What is *not* implemented
-
-Task planning, parallel agent execution, retries, timeouts, cancellation, partial-result recovery, and a persisted execution trace. The `agent_sessions` table is defined but not written to. Each chat response does include `active_agent`, `routing_reason`, and a `tool_calls` list with the tools invoked.
+Routing currently uses **deterministic keyword matching**, not an LLM planner.
 
 ---
 
-## Document Intelligence & RAG
-
-### Ingestion pipeline
+# 📚 Document Intelligence & RAG
 
 ```mermaid
 flowchart LR
-    U["Upload"] --> V["Validate<br/>size, extension, magic bytes"]
-    V --> S["Sanitise filename<br/>store in data/uploads"]
-    S --> X["Extract<br/>PDF / DOCX / CSV / XLSX / image / TXT"]
-    X --> C["Structure-aware chunking"]
-    C --> E["Embed chunks"]
-    E --> VS[("Vector store")]
-    C --> DB[("documents + document_chunks")]
+
+    A["Upload"]
+    --> B["Validate"]
+
+    B --> C["Extract"]
+
+    C --> D["Structure-Aware Chunking"]
+
+    D --> E["Generate Embeddings"]
+
+    E --> F["Vector Store"]
+
+    D --> G["Database"]
 ```
 
-| Format | Extractor | What is captured |
-|---|---|---|
-| PDF | `pypdf` | Per-page text, heuristic headings and tables, page-level metadata |
-| DOCX | `python-docx` | Paragraphs, headings (by style), tables rendered as Markdown |
-| CSV | `pandas` | Shape, dtypes, missing-value percentages, numeric and categorical stats, sample rows |
-| XLSX / XLS | `pandas` + `openpyxl` | Per-sheet stats, up to 20 formulas per sheet (`.xlsx`) |
-| TXT | built-in | Full text |
-| PNG / JPG / JPEG / WEBP | Pillow | Dimensions, brightness/contrast, base64 payload; OCR text only if `pytesseract` is installed |
+### Supported Formats
 
-**Validation** (`app/utils/file_validation.py`): maximum size (`MAX_UPLOAD_SIZE_MB`, default 50), extension allow-list, empty-file rejection, magic-byte checks for PDF/PNG/JPEG/DOCX/XLSX/WEBP, and a UTF-8/Latin-1 decode check for TXT/CSV. Filenames are stripped of directory components, control characters, and unsafe characters; files are stored as `data/uploads/<document_id>_<clean_name>`.
+| Format                  | Processor         |
+| ----------------------- | ----------------- |
+| PDF                     | pypdf             |
+| DOCX                    | python-docx       |
+| CSV                     | pandas            |
+| XLSX / XLS              | pandas + openpyxl |
+| TXT                     | Python built-in   |
+| PNG / JPG / JPEG / WEBP | Pillow            |
 
-### Chunking
-
-`IntelligentChunker` splits by page (PDF), by heading section (DOCX), by sheet (Excel), or by paragraph (everything else). Chunk size and overlap are measured in **words** (`CHUNK_SIZE=600`, `CHUNK_OVERLAP=100`). Each chunk carries `document_id`, `filename`, `page`, `section`, `chunk_index`, `modality`, and a timestamp. DOCX and text content is assigned page 1.
-
-### Embeddings
-
-| Provider | Behaviour |
-|---|---|
-| `mock` (default) | Deterministic 384-dimension vectors built from hashed word and bigram features, L2-normalised. Fully offline and reproducible, but **lexical rather than learned-semantic** — it matches shared vocabulary, not meaning. |
-| `openai` | Calls the OpenAI embeddings endpoint (requires `LLM_API_KEY`); falls back to the hashed vectors on error. |
-
-The `.env.example` file also lists `sentence-transformers` as an option, but no code path for it exists yet.
-
-### Retrieval
+### RAG Pipeline
 
 ```mermaid
 flowchart LR
-    Q["Query"] --> N["Normalise"] --> EQ["Embed"] --> VSR["Cosine search<br/>top max(2k, 8)"]
-    VSR --> F["Optional document_id filter<br/>+ similarity threshold"]
-    F --> RR["Hybrid rerank"]
-    RR --> CTX["Context blocks with<br/>file / page / section"]
-    CTX --> LLM["LLM answer + Sources"]
+
+    Q["User Query"]
+    --> N["Normalize"]
+
+    N --> E["Embed"]
+
+    E --> S["Cosine Search"]
+
+    S --> F["Metadata Filtering"]
+
+    F --> R["Hybrid Reranking"]
+
+    R --> C["Context Blocks"]
+
+    C --> L["LLM"]
+
+    L --> A["Answer + Citations"]
 ```
 
-- **Vector store** (`app/rag/vector_store.py`): an in-process NumPy matrix with cosine similarity, persisted to `index.json` and `vectors.npy` under `VECTOR_DB_PATH`. Supports metadata filtering, deletion by document, and a similarity threshold.
-- **Reranker**: `0.7 × vector score + 0.2 × query-term overlap + 0.2 bonus` when the exact query phrase appears in the chunk.
-- **Prompting**: the system prompt instructs the model to answer only from the supplied context, cite filename and page, and return a fixed "not found" sentence when context is insufficient.
-- **Deletion**: `DELETE /documents/{id}` removes the file on disk, the vector entries, and the database rows (chunks cascade). Document versioning is not implemented.
+### Vector Store
 
-> `VECTOR_DB_TYPE` exists in the settings and is echoed by `/settings/config`, but no code reads it. ChromaDB and Qdrant are **not** dependencies; the NumPy store is the only vector backend.
+MultiMind AI currently uses a custom **NumPy-based vector store** persisted to disk.
 
----
-
-## GraphRAG
-
-A lightweight knowledge-graph layer lives in `app/graph/`.
-
-| Component | What it does |
-|---|---|
-| `EntityExtractor` | Dictionary of known AI/ML/BI terms plus heuristics for capitalised words and acronyms; assigns categories such as Concept, Model, Metric, Technology |
-| `RelationshipExtractor` | Finds entity pairs co-occurring in a sentence and labels the edge from verb patterns (`USES`, `IMPLEMENTS`, `OPTIMIZES`, `EVALUATES_ON`, `DEPENDS_ON`, `IS_A`, `PREDICTS`, `CONTAINS`, otherwise `ASSOCIATED_WITH`) |
-| `KnowledgeGraphStore` | NetworkX `DiGraph` with JSON persistence (`knowledge_graph.json` in the vector-store directory) and neighbourhood sub-graph queries |
-| `GraphRAGRetriever` | Combines vector hits with graph facts for entities found in the query |
-
-**Implemented:** the pieces above, exposed through `POST /search` (`use_graph: true` by default) and covered by a unit test. `GET /health` reports node/edge counts.
-
-**Not yet wired in:** the ingestion pipeline does **not** extract entities or write to the graph, so in a fresh install the graph is empty and `/search` returns only vector results until knowledge is added programmatically (as the test does). Entities are generic AI/ML/BI concepts — there are no Customer/Product/Supplier entity types. The search endpoint returns combined context; it does not run an LLM over it.
+It does **not** currently use ChromaDB or Qdrant.
 
 ---
 
-## Business Intelligence
+# 🕸️ GraphRAG
 
-`app/business_intelligence/` turns a table into KPIs and plain-language insights:
+MultiMind AI contains a lightweight knowledge-graph layer using **NetworkX**.
+
+### Components
+
+* Entity extraction
+* Relationship extraction
+* NetworkX directed graph
+* JSON persistence
+* Graph + vector retrieval
 
 ```mermaid
 flowchart LR
-    RAW["CSV / Excel"] --> DET["Detect columns<br/>(or use supplied names)"]
-    DET --> KPI["pandas KPI calculation"]
-    KPI --> DIM["Top-5 dimension breakdown"]
-    KPI --> INS["Rule-based insights"]
-    DIM --> INS
-    INS --> OUT["API response + saved analysis"]
+
+    QUERY["User Query"]
+    --> VECTOR["Vector Search"]
+
+    QUERY --> ENTITY["Entity Extraction"]
+
+    ENTITY --> GRAPH["Knowledge Graph"]
+
+    GRAPH --> FACTS["Graph Facts"]
+
+    VECTOR --> CONTEXT["Combined Context"]
+
+    FACTS --> CONTEXT
 ```
 
-| KPI | Definition |
-|---|---|
-| `total_revenue`, `total_cost` | Column sums |
-| `gross_profit` | revenue − cost |
-| `profit_margin_percent` | gross profit ÷ revenue × 100 |
-| `average_order_value`, `total_orders` | revenue ÷ distinct orders (or row count when no order-id column exists) |
-| `latest_period_growth_percent` | Month-over-month change between the last two months |
-
-If columns are not specified, the calculator looks (case-insensitively) for `revenue`/`sales`/`amount`/`price`, `cost`/`expenses`/`cogs`, `order_id`/`id`/`transaction_id`, and `date`/`timestamp`/`order_date`. A dimension breakdown (`dimension_column`) ranks the top five values by revenue share. Insights are produced by fixed rules (for example, margin ≥ 30 % is "strong", ≤ 10 % is a warning, a single item above 40 % share is flagged as concentration risk). All arithmetic is done in pandas, not by the LLM.
+GraphRAG is currently **partial** because document ingestion does not automatically populate the graph yet.
 
 ---
 
-## Machine Learning
+# 📊 Business Intelligence
 
-`POST /analyze-data` runs a complete pipeline on a server-side CSV/Excel file (`app/ml/`).
+The BI module uses **pandas** for deterministic calculations.
 
-| Task (`task_type`) | Models | Metrics |
-|---|---|---|
-| `classification` | Random Forest (default) or Logistic Regression (`model_name: "logistic_regression"`) | accuracy, precision, recall, F1 |
-| `regression` | Random Forest (default) or Ridge (`model_name: "ridge"`) | MAE, MSE, RMSE, R² |
-| `clustering` | K-Means (`n_clusters`, default 3) | silhouette score, cluster sizes |
-| `anomaly_detection` | Isolation Forest (contamination 0.05) | anomaly count and rate |
+```mermaid
+flowchart LR
 
-**Preprocessing:** median imputation for numeric columns, mode imputation for categoricals, one-hot encoding for categoricals with ≤ 20 unique values (others are dropped), standard scaling, and an 80/20 train/test split with `random_state=42` for supervised tasks. The response also lists strongly correlated feature pairs (|r| ≥ 0.7). Every run is saved to the `analysis_results` table.
+    DATA["CSV / Excel"]
+    --> DETECT["Column Detection"]
 
-Models are trained per request and are **not persisted**; there is no model registry, monitoring, or scheduled retraining.
+    DETECT --> KPI["KPI Calculation"]
 
----
+    KPI --> BREAKDOWN["Top-5 Breakdown"]
 
-## Forecasting
+    KPI --> INSIGHTS["Rule-Based Insights"]
 
-`POST /forecast` (`app/forecasting/`) forecasts one numeric column over time.
+    BREAKDOWN --> INSIGHTS
 
-1. Parse and sort dates, drop missing values, and sum duplicate dates (at least 5 points are required).
-2. Build features: trend index, month, day of week, day of month, up to 3 lag values, and a 3-period rolling mean.
-3. Hold out the last ~20 % (minimum 2 points), fit, and compute **MAE, RMSE, and MAPE** on that held-out slice.
-4. Refit on all history and forecast recursively for `horizon_periods` steps (default 7). Forecasts are clamped to be non-negative.
-5. Return the last 20 historical points, the forecast points, and the metrics; the result is saved to `forecast_results`.
+    INSIGHTS --> RESULT["API Response"]
+```
 
-| Option | Values |
-|---|---|
-| `model_type` | `ridge` (default) or `random_forest` — any other value falls back to Ridge |
+### KPIs
 
-The time step is inferred from the gap between the last two dates in days, so monthly data is stepped by that day count rather than by calendar month. **No confidence intervals are produced**, and ARIMA, Prophet, and gradient-boosting models are not implemented. With little data the held-out metrics are computed on only a couple of points and should be read accordingly.
+* Total Revenue
+* Total Cost
+* Gross Profit
+* Profit Margin
+* Average Order Value
+* Total Orders
+* Month-over-Month Growth
+* Top-N Dimension Breakdown
 
----
-
-## Reports, Quizzes & Image Analysis
-
-- **Reports** — `POST /generate-report` builds a prompt requesting five sections (Executive Summary, Background & Objectives, Key Findings, Risk & Strategic Considerations, Recommendations), sends it to the LLM service, and stores the result in the `reports` table as Markdown. This needs a real LLM provider: with the default mock provider the stored content is the "I could not find this information in the uploaded documents." fallback. `ReportService.export_pdf` (ReportLab) exists but no endpoint exposes it yet, and there is no endpoint to list stored reports.
-- **Quizzes** — `POST /generate-quiz` asks the LLM service for N multiple-choice questions with answer keys. In mock mode the same fixed sample question is repeated N times regardless of the source material.
-- **Image analysis** — `POST /analyze-image` returns image metadata, OCR text (when `pytesseract` is available), and an LLM analysis. Only an OpenAI-backed provider sees the actual image.
+All arithmetic is performed by pandas rather than the LLM.
 
 ---
 
-## Web Dashboard
+# 🤖 Machine Learning
 
-The UI is a single page of vanilla HTML, CSS, and JavaScript in `static/`, served at `/`. There is no build step and no frontend framework.
+The ML pipeline is implemented using **scikit-learn**.
 
-| Tab | Purpose |
-|---|---|
-| Dashboard | Greeting, headline cards, recent documents and activity, embedded chat |
-| Chat | Full conversation view backed by `/chat` |
-| Documents | Upload, list, inspect, and delete documents |
-| Knowledge Base | Live `/health` data: indexed chunks, graph nodes, system status |
-| Agents | Overview cards describing the available agents |
-| Data | Run ML analysis or BI analytics against a server-side file path |
-| Vision | Upload an image and analyse it |
-| Forecast | Run a forecast against a server-side file path |
-| Reports | Generate quizzes and reports |
-| Activity Log | Activity list (currently sample content) |
-| Settings | View backend configuration; profile and preference settings |
+| Task              | Model                               | Metrics                         |
+| ----------------- | ----------------------------------- | ------------------------------- |
+| Classification    | Random Forest / Logistic Regression | Accuracy, Precision, Recall, F1 |
+| Regression        | Random Forest / Ridge               | MAE, MSE, RMSE, R²              |
+| Clustering        | K-Means                             | Silhouette Score                |
+| Anomaly Detection | Isolation Forest                    | Anomaly Count / Rate            |
 
-**Things to know**
+### Preprocessing
 
-- ML, BI, and forecast results are displayed as formatted JSON; there is no charting library.
-- Several dashboard figures (document/chunk/conversation counts), the sample document rows, and the Activity Log entries are **static placeholder content**, not live data. The Knowledge Base tab and the document list reflect real API data.
-- On first load the page requests a session for the seeded demo user via `/auth/switch-user` and stores the JWT in `localStorage`.
-- Lucide icons load from a CDN (`unpkg.com`), and fonts from Google Fonts, so the UI expects internet access for styling.
-- No screenshots are included in this repository; add them under a `docs/images/` folder and link them here when available.
+* Median imputation for numeric values
+* Mode imputation for categorical values
+* One-hot encoding
+* Standard scaling
+* 80/20 train-test split
+* Fixed `random_state=42`
+
+Models are trained per request and are not currently persisted.
 
 ---
 
-## Technology Stack
+# 📈 Forecasting
 
-Confirmed from `requirements.txt`, the Dockerfile, the CI workflow, and the source code.
+MultiMind AI supports time-series forecasting using:
 
-| Layer | Technologies |
-|---|---|
-| Language / runtime | Python 3.11+ (CI runs 3.11 and 3.12; Docker uses 3.11) |
-| API | FastAPI, Uvicorn, Pydantic v2, pydantic-settings, python-multipart |
-| Persistence | SQLAlchemy 2.x ORM; SQLite by default (any SQLAlchemy URL accepted) |
-| Auth | PyJWT (HS256), PBKDF2-HMAC-SHA256 password hashing (standard library), `cryptography` |
-| LLM | `httpx` client for the OpenAI chat-completions API; built-in local fallback |
-| RAG | NumPy vector store, custom chunker / embedder / reranker |
-| Graph | NetworkX |
-| Data & ML | pandas, NumPy, SciPy, scikit-learn |
-| Documents | pypdf, python-docx, openpyxl, Pillow, ReportLab (PDF helper) |
-| Frontend | Vanilla HTML / CSS / JavaScript, Lucide icons (CDN) |
-| Testing | pytest, pytest-asyncio, FastAPI `TestClient` |
-| Infrastructure | Docker, Docker Compose, GitHub Actions |
+* Ridge Regression
+* Random Forest
 
-Not used (despite appearing in some design notes): PostgreSQL drivers, Redis, Celery, Alembic, LangChain/LangGraph, ChromaDB, Qdrant, Prophet, statsmodels, React/TypeScript.
+### Forecast Pipeline
+
+1. Parse and sort dates
+2. Remove missing values
+3. Aggregate duplicate dates
+4. Generate trend/calendar features
+5. Generate lag features
+6. Generate rolling mean
+7. Hold out approximately 20% of history
+8. Calculate MAE, RMSE and MAPE
+9. Retrain using complete history
+10. Generate recursive forecasts
+
+Default forecast horizon is **7 periods**.
 
 ---
 
-## Project Structure
+# 📝 Reports, Quizzes & Image Analysis
+
+### Reports
+
+The report system can generate:
+
+* Executive Summary
+* Background & Objectives
+* Key Findings
+* Risk & Strategic Considerations
+* Recommendations
+
+Reports are stored as Markdown in the database.
+
+### Quizzes
+
+The quiz endpoint generates multiple-choice questions.
+
+### Image Analysis
+
+Image analysis can provide:
+
+* Image dimensions
+* Brightness/contrast metrics
+* OCR when `pytesseract` is installed
+* LLM-based image analysis when using the OpenAI provider
+
+These features are currently **partial** and work best with a real LLM provider.
+
+---
+
+# 🖥️ Web Dashboard
+
+The dashboard is built using:
+
+* HTML
+* CSS
+* Vanilla JavaScript
+* Lucide icons
+
+There is **no React, TypeScript, or frontend build system**.
+
+### Dashboard Sections
+
+| Section        | Purpose                         |
+| -------------- | ------------------------------- |
+| Dashboard      | Overview and recent activity    |
+| Chat           | AI conversation                 |
+| Documents      | Upload and manage files         |
+| Knowledge Base | Vector/graph/system information |
+| Agents         | Agent overview                  |
+| Data           | ML and BI analysis              |
+| Vision         | Image analysis                  |
+| Forecast       | Time-series forecasting         |
+| Reports        | Reports and quizzes             |
+| Activity Log   | Activity history                |
+| Settings       | Configuration and profile       |
+
+---
+
+# 🧰 Technology Stack
+
+| Layer               | Technology                      |
+| ------------------- | ------------------------------- |
+| Language            | Python 3.11+                    |
+| API                 | FastAPI                         |
+| Server              | Uvicorn                         |
+| Validation          | Pydantic v2                     |
+| ORM                 | SQLAlchemy 2.x                  |
+| Database            | SQLite                          |
+| Authentication      | PyJWT                           |
+| Password Hashing    | PBKDF2-HMAC-SHA256              |
+| LLM Client          | httpx / OpenAI                  |
+| RAG                 | Custom NumPy Vector Store       |
+| Graph               | NetworkX                        |
+| Data Processing     | pandas                          |
+| Machine Learning    | scikit-learn                    |
+| Numerical Computing | NumPy / SciPy                   |
+| PDF                 | pypdf                           |
+| DOCX                | python-docx                     |
+| Excel               | openpyxl                        |
+| Images              | Pillow                          |
+| PDF Reports         | ReportLab                       |
+| Frontend            | HTML / CSS / Vanilla JavaScript |
+| Testing             | pytest / pytest-asyncio         |
+| Infrastructure      | Docker / Docker Compose         |
+| CI                  | GitHub Actions                  |
+
+### Technologies Not Currently Used
+
+* React
+* TypeScript
+* Express
+* Tailwind CSS
+* LangChain
+* LangGraph
+* ChromaDB
+* Qdrant
+* PostgreSQL drivers
+* Redis
+* Celery
+* Alembic
+* Prophet
+* statsmodels
+
+---
+
+# 📁 Project Structure
 
 ```text
 .
 ├── app/
-│   ├── main.py                    # FastAPI app, CORS, error handler, static mount
-│   ├── config/settings.py         # Environment-driven settings + lightweight .env loader
-│   ├── api/                       # Routers: auth, documents, chat, agents, analysis, health
-│   ├── agents/                    # Orchestrator, 8 agents, tool registry, agent state
-│   ├── rag/                       # Chunking, embeddings, vector store, retriever, reranker, ingestion, prompts
-│   ├── graph/                     # Entity/relationship extraction, NetworkX store, graph retriever
-│   ├── multimodal/                # PDF, DOCX, CSV, Excel, image processors
-│   ├── business_intelligence/     # KPI calculator, dimension analytics, insight rules
-│   ├── ml/                        # Preprocessing, training, evaluation, inference (classification/regression/clustering/anomaly)
-│   ├── forecasting/               # Time-series preprocessing, model wrapper, training, recursive forecaster
-│   ├── services/                  # LLM service, document service, report service
-│   ├── database/                  # SQLAlchemy engine/session, models, repositories
-│   └── utils/                     # File validation, security helpers, secret-masking logger
-├── static/                        # Dashboard: index.html, app.js, style.css
-├── tests/                         # pytest suite (34 tests)
-├── docs/                          # Supplementary design notes (see note below)
-├── data/                          # Runtime data: uploads/, processed/, vector_store/, SQLite DB, log
-├── .github/workflows/ci.yml       # CI pipeline
+│   ├── main.py
+│   ├── config/
+│   │   └── settings.py
+│   ├── api/
+│   ├── agents/
+│   ├── rag/
+│   ├── graph/
+│   ├── multimodal/
+│   ├── business_intelligence/
+│   ├── ml/
+│   ├── forecasting/
+│   ├── services/
+│   ├── database/
+│   └── utils/
+│
+├── static/
+│   ├── index.html
+│   ├── app.js
+│   └── style.css
+│
+├── tests/
+├── docs/
+├── data/
+│   ├── uploads/
+│   ├── processed/
+│   └── vector_store/
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
 ├── Dockerfile
 ├── docker-compose.yml
 ├── requirements.txt
 └── .env.example
 ```
 
-The `docs/` folder contains earlier design notes (architecture, API, RAG, security, and so on). Where they differ from this README, this README reflects the current code — for example, the notes mention role-based access control, which is not implemented.
+---
+
+# 🗄️ Database
+
+The project uses **SQLAlchemy 2.x** with SQLite by default.
+
+### Main Tables
+
+* `users`
+* `conversations`
+* `messages`
+* `documents`
+* `document_chunks`
+* `reports`
+* `analysis_results`
+* `forecast_results`
+* `agent_sessions`
+
+Tables are created automatically at startup using SQLAlchemy metadata.
+
+There is currently **no Alembic migration system**.
 
 ---
 
-## Database
+# 🔐 Authentication & Security
 
-SQLAlchemy models live in `app/database/models.py`. Tables are created automatically at startup with `Base.metadata.create_all`; **there is no migration system** (no Alembic). Primary keys are UUID strings.
+### Implemented
 
-```mermaid
-erDiagram
-    USERS ||--o{ CONVERSATIONS : "user_id (nullable)"
-    CONVERSATIONS ||--o{ MESSAGES : "conversation_id"
-    DOCUMENTS ||--o{ DOCUMENT_CHUNKS : "document_id (cascade)"
+* JWT authentication
+* User registration
+* User login
+* Profile management
+* PBKDF2 password hashing
+* File validation
+* Filename sanitization
+* Upload size restrictions
+* Magic-byte validation
+* Prompt-injection filtering
+* AST-based safe calculator
+* Secret/API-key masking in logs
 
-    USERS {
-        string id PK
-        string email UK
-        string hashed_password
-        string full_name
-        bool is_active
-        bool is_admin
-    }
-    CONVERSATIONS {
-        string id PK
-        string session_id UK
-        string user_id FK
-        string title
-    }
-    MESSAGES {
-        string id PK
-        string conversation_id FK
-        string role
-        text content
-        json sources
-        string agent_name
-    }
-    DOCUMENTS {
-        string id PK
-        string filename
-        string file_path
-        string file_type
-        int file_size_bytes
-        int total_pages
-        int chunk_count
-        string status
-        json metadata_info
-        text summary
-    }
-    DOCUMENT_CHUNKS {
-        string id PK
-        string document_id FK
-        int chunk_index
-        text content
-        int page_number
-        string section
-        string modality
-    }
-    REPORTS {
-        string id PK
-        string title
-        string topic
-        text content
-        json sources
-        string format
-    }
-    ANALYSIS_RESULTS {
-        string id PK
-        string filename
-        string analysis_type
-        text summary
-        json raw_results
-        json insights
-    }
-    FORECAST_RESULTS {
-        string id PK
-        string filename
-        string date_column
-        string target_column
-        string model_name
-        int horizon_periods
-        json metrics
-        json forecast_points
-    }
-    AGENT_SESSIONS {
-        string id PK
-        string session_id
-        string agent_name
-        string status
-        json execution_trace
-    }
+### ⚠️ Public Deployment Warning
+
+This project is currently a **development/demo build**.
+
+Several endpoints are not protected by authentication, demo user switching is available, CORS is permissive, file-path restrictions are incomplete, and rate limiting/audit logging are not implemented.
+
+**Do not deploy the current version directly to a public production environment without security hardening.**
+
+---
+
+# ⚙️ Configuration
+
+Create `.env` from `.env.example`.
+
+```env
+APP_NAME=MultiMind AI
+APP_ENV=development
+
+APP_HOST=0.0.0.0
+APP_PORT=8000
+
+DEBUG=True
+
+SECRET_KEY=change-this-to-a-long-random-secret
+
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+
+DATABASE_URL=sqlite:///./data/multimind.db
+
+LLM_PROVIDER=mock
+LLM_API_KEY=
+LLM_MODEL=gpt-4o-mini
+
+LLM_TEMPERATURE=0.2
+LLM_MAX_TOKENS=2048
+
+EMBEDDING_PROVIDER=mock
+EMBEDDING_MODEL=text-embedding-3-small
+EMBEDDING_DIM=384
+
+VECTOR_DB_PATH=./data/vector_store
+
+CHUNK_SIZE=600
+CHUNK_OVERLAP=100
+
+TOP_K=4
+SIMILARITY_THRESHOLD=0.35
+
+MAX_UPLOAD_SIZE_MB=50
+
+LOG_LEVEL=INFO
 ```
 
-Most tables also carry `created_at` (and, for several, `updated_at`) timestamps. Indexes exist on `users.email`, `documents.filename/file_type/status`, `document_chunks.document_id`, `(document_id, chunk_index)`, `conversations.session_id`, and `messages.conversation_id`. Soft deletion is not implemented. `analysis_results`, `forecast_results`, and `reports` are standalone (not linked to users or documents), and `agent_sessions` is defined but currently unused. Conversations are created without a `user_id`.
-
-To use PostgreSQL, set `DATABASE_URL` to a SQLAlchemy URL and install a driver yourself (for example `psycopg`); no driver is listed in `requirements.txt`, and PostgreSQL has not been exercised by the test suite.
+The default configuration is designed for local/offline development.
 
 ---
 
-## Authentication & Security
+# 🚀 Installation
 
-### What exists
+## Requirements
 
-- **Registration and login** (`/auth/register`, `/auth/login`) issue a JWT (HS256, default lifetime 1440 minutes). `GET/PUT /auth/profile` and `GET /auth/me` require a `Bearer` token.
-- **Password hashing:** PBKDF2-HMAC-SHA256, 100,000 iterations, random 16-byte salt, constant-time comparison.
-- **Upload hardening:** size limit, extension allow-list, magic-byte checks, filename sanitisation.
-- **Prompt-injection filter:** `/chat` strips a small set of known injection phrases from the user message.
-- **Safe calculator:** AST-based arithmetic only.
-- **Log hygiene:** a logging filter masks API keys, passwords, bearer tokens, and JWT-shaped strings.
-- **Secrets:** `.env` is git-ignored; `.env.example` contains placeholders only. **Never commit real credentials.**
+* Python **3.11+**
+* Git
 
-### Read this before deploying anywhere public
+Node.js is **not required**.
 
-This project is currently a development/demo build. The following are known and intentional-for-demo, but unsafe on a public network:
-
-1. **Most endpoints do not require authentication** — upload, documents, chat, search, analysis, forecast, reports, and settings are open.
-2. **`POST /auth/switch-user` is unauthenticated** and creates the account (with a default demo password) if it does not exist, returning a valid token. `GET /auth/users` lists all active users. The dashboard relies on this for its demo login. Remove both before any real deployment.
-3. **Seeded demo accounts** (`user@multimind.ai`, `ali@multimind.ai`, `ahmed@multimind.ai`) are created on first start with a shared default password defined in `app/database/connection.py`.
-4. **`SECRET_KEY` has a built-in fallback** in `settings.py`. If you do not set your own, tokens are signed with a publicly known key. Always set a long random value.
-5. **`/analyze-data`, `/analytics`, `/forecast`, and `/analyze-image` accept server-side file paths** and read them without restricting the path to the upload directory.
-6. **CORS allows all origins** (`allow_origins=["*"]` with credentials).
-7. **The global error handler returns the exception text** in the response body.
-8. **No rate limiting**, no refresh tokens, no token revocation, no audit log, and no enforced roles (`is_admin` is stored but unused).
-
----
-
-## Configuration
-
-Settings are read from environment variables. A small built-in loader also reads a `.env` file in the project root (values already in the environment win). Copy the template and edit it:
-
-```bash
-cp .env.example .env
-```
-
-| Variable | Default | Description |
-|---|---|---|
-| `APP_NAME` | `MultiMind AI` | Display name |
-| `APP_ENV` | `development` | Environment label (Docker sets `production`) |
-| `APP_HOST` / `APP_PORT` | `0.0.0.0` / `8000` | Used when starting via `python -m app.main` |
-| `DEBUG` | `True` | Enables auto-reload when started via `python -m app.main` |
-| `SECRET_KEY` | placeholder | **Set a long random value** — JWT signing key |
-| `ALGORITHM` | `HS256` | JWT algorithm |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | `1440` | Token lifetime |
-| `DATABASE_URL` | SQLite file in `data/` | Any SQLAlchemy URL |
-| `LLM_PROVIDER` | `mock` | `mock` (local) or `openai` |
-| `LLM_API_KEY` | empty | Used for OpenAI chat and embeddings |
-| `LLM_MODEL` | `gpt-4o-mini` | Chat model name |
-| `LLM_TEMPERATURE` / `LLM_MAX_TOKENS` | `0.2` / `2048` | Generation settings |
-| `EMBEDDING_PROVIDER` | `mock` | `mock` or `openai` |
-| `EMBEDDING_MODEL` | `text-embedding-3-small` | OpenAI embedding model |
-| `EMBEDDING_DIM` | `384` | Dimension of the local hashed embeddings |
-| `VECTOR_DB_PATH` | `./data/vector_store` | Vector index and graph JSON location |
-| `VECTOR_DB_TYPE` | `memory_chroma` | Informational only — not read by any code |
-| `CHUNK_SIZE` / `CHUNK_OVERLAP` | `600` / `100` | Chunking, measured in words |
-| `TOP_K` | `4` | Chunks returned |
-| `SIMILARITY_THRESHOLD` | `0.35` | Minimum cosine score (the top hit is always kept) |
-| `MAX_UPLOAD_SIZE_MB` | `50` | Upload size limit |
-| `ALLOWED_EXTENSIONS` | `.pdf,.docx,.txt,.csv,.xlsx,.xls,.png,.jpg,.jpeg,.webp` | Upload allow-list |
-| `LOG_LEVEL` | `INFO` | Logging level |
-
-`UPLOAD_DIR`, `PROCESSED_DIR`, and `LOG_FILE` appear in `.env.example` but are currently fixed to `data/uploads`, `data/processed`, and `data/multimind.log` in code. The values `groq`, `gemini`, and `anthropic` are mentioned in comments as LLM providers, but only `openai` is implemented.
-
----
-
-## Installation & Running
-
-**Prerequisites:** Python 3.11 or newer. Node.js is not required.
+### Clone Repository
 
 ```bash
 git clone <repository-url>
 cd <project-directory>
 ```
 
-Create a virtual environment.
+### Create Virtual Environment
 
-Windows:
+#### Windows
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
 ```
 
-macOS / Linux:
+#### macOS / Linux
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Install dependencies:
+### Install Dependencies
 
 ```bash
 pip install -r requirements.txt
+```
+
+Because the current project uses `EmailStr`, also install:
+
+```bash
 pip install email-validator
 ```
 
-> **Known issue:** the API models use Pydantic's `EmailStr`, which needs the `email-validator` package, but it is not listed in `requirements.txt`. Without it, `import app.main` fails with an `ImportError`. Add `email-validator` (or `pydantic[email]`) to `requirements.txt` to make `pip install -r requirements.txt` sufficient — this also affects the Docker build and CI.
+> **Known issue:** `email-validator` is currently missing from `requirements.txt`. Adding it to the requirements file is recommended so clean CI/Docker installations work correctly.
 
-Configure and start the server:
+---
+
+# ▶️ Running the Application
+
+Start the server:
 
 ```bash
-cp .env.example .env          # optional; defaults work for a local run
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-`python -m app.main` also works and uses `APP_HOST`, `APP_PORT`, and `DEBUG`.
-
-| URL | What |
-|---|---|
-| http://localhost:8000/ | Web dashboard |
-| http://localhost:8000/docs | Swagger UI (OpenAPI) |
-| http://localhost:8000/redoc | ReDoc |
-| http://localhost:8000/health | Health check |
-
-**Database setup:** nothing to do for SQLite — the file and tables are created on first start, and three demo users are seeded.
-
-### Quick tour with `curl`
+Or:
 
 ```bash
-# Upload a document
-curl -F "file=@sample.csv" http://localhost:8000/upload
+python -m app.main
+```
 
-# Ask a question (use the same session_id to keep context)
+### Open
+
+| URL                            | Purpose      |
+| ------------------------------ | ------------ |
+| `http://localhost:8000/`       | Dashboard    |
+| `http://localhost:8000/docs`   | Swagger API  |
+| `http://localhost:8000/redoc`  | ReDoc        |
+| `http://localhost:8000/health` | Health Check |
+
+SQLite database and tables are created automatically on first start.
+
+---
+
+# 🧪 Quick API Examples
+
+### Upload Document
+
+```bash
+curl -F "file=@sample.csv" http://localhost:8000/upload
+```
+
+### Chat
+
+```bash
 curl -X POST http://localhost:8000/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "Summarize the uploaded document", "session_id": "demo-1"}'
-
-# KPIs for an uploaded dataset (path = data/uploads/<document_id>_<filename>)
-curl -X POST http://localhost:8000/analytics \
-  -H "Content-Type: application/json" \
-  -d '{"file_path": "data/uploads/<document_id>_sample.csv", "revenue_column": "revenue", "cost_column": "cost"}'
+  -d '{"message":"Summarize the uploaded document","session_id":"demo-1"}'
 ```
 
-### Example chat queries
-
-These match the router's keywords and the tools described above:
-
-```text
-What is 25 * 40?                                  → calculator
-Show KPIs and profit margin for the uploaded CSV  → business-intelligence agent
-Forecast future sales from the dataset            → forecasting agent
-Give me statistics on the dataset                 → data agent
-Summarize the uploaded document                   → document agent
-Create 10 MCQs about supervised learning          → quiz agent
-Generate report on quarterly performance          → report agent
-What does the document say about data pipelines?  → research agent (RAG)
-```
-
-The calculator, KPI, forecast, and RAG examples work offline. The data, document-summary, quiz, and report examples need a real LLM provider to produce useful output.
-
----
-
-## Docker
-
-`docker-compose.yml` defines a single service.
-
-| Service | Image | Port | Notes |
-|---|---|---|---|
-| `app` | built from `Dockerfile` (`python:3.11-slim`) | `8000` | Mounts `./data` as a volume; runs with mock LLM/embeddings; health check on `/health` |
+### Business Analytics
 
 ```bash
-docker compose up --build      # build and start
-docker compose down            # stop and remove containers
+curl -X POST http://localhost:8000/analytics \
+  -H "Content-Type: application/json" \
+  -d '{"file_path":"data/uploads/<document_id>_sample.csv","revenue_column":"revenue","cost_column":"cost"}'
 ```
-
-There are no database, cache, or worker containers. Because the build installs only `requirements.txt`, the missing `email-validator` dependency noted above must be added before the container will start.
 
 ---
 
-## API Reference
+# 💬 Example Queries
 
-Every route below is available at the root and with an `/api` prefix. Interactive documentation is at `/docs`. Unless noted, the endpoints do **not** require authentication (see [Security](#authentication--security)).
+```text
+What is 25 * 40?
+→ Calculator
 
-### Health & settings
+Show KPIs and profit margin for the uploaded CSV
+→ Business Intelligence Agent
 
-| Method | Path | Purpose |
-|---|---|---|
-| GET | `/health` | Database status, vector-store count, graph summary, active providers |
-| GET | `/settings/config` | Non-secret active configuration |
+Forecast future sales from the dataset
+→ Forecasting Agent
 
-### Authentication & profile (also mounted under `/user`)
+Give me statistics on the dataset
+→ Data Agent
 
-| Method | Path | Auth | Purpose |
-|---|---|---|---|
-| POST | `/auth/register` | – | Create an account, returns a token (`400` if email exists) |
-| POST | `/auth/login` | – | Returns a token (`401` on bad credentials) |
-| POST | `/auth/switch-user` | – | Demo helper: token for an email, creating the user if needed |
-| GET | `/auth/users` | – | List active users (demo switcher) |
-| GET | `/auth/me`, `/auth/profile` | Bearer | Current user |
-| PUT | `/auth/profile` | Bearer | Update `full_name` |
+Summarize the uploaded document
+→ Document Agent
+
+Create 10 MCQs about supervised learning
+→ Quiz Agent
+
+Generate report on quarterly performance
+→ Report Agent
+
+What does the document say about data pipelines?
+→ Research / RAG Agent
+```
+
+---
+
+# 🐳 Docker
+
+Build and start:
+
+```bash
+docker compose up --build
+```
+
+Stop:
+
+```bash
+docker compose down
+```
+
+The Docker configuration uses Python 3.11 and exposes port `8000`.
+
+The `data/` directory is mounted as a volume so application data persists between container runs.
+
+---
+
+# 🔌 API Reference
+
+### Health
+
+| Method | Endpoint           | Description                     |
+| ------ | ------------------ | ------------------------------- |
+| GET    | `/health`          | Health and system information   |
+| GET    | `/settings/config` | Active non-secret configuration |
+
+### Authentication
+
+| Method | Endpoint            | Description      |
+| ------ | ------------------- | ---------------- |
+| POST   | `/auth/register`    | Register         |
+| POST   | `/auth/login`       | Login            |
+| POST   | `/auth/switch-user` | Demo user switch |
+| GET    | `/auth/users`       | Active users     |
+| GET    | `/auth/me`          | Current user     |
+| GET    | `/auth/profile`     | User profile     |
+| PUT    | `/auth/profile`     | Update profile   |
 
 ### Documents
 
-| Method | Path | Purpose |
-|---|---|---|
-| POST | `/upload` | Multipart `file`; validates, extracts, chunks, embeds, stores (`201`; `400` on validation failure) |
-| GET | `/documents?limit=&offset=` | List documents |
-| GET | `/documents/{id}` | Document details and metadata (`404` if missing) |
-| DELETE | `/documents/{id}` | Remove file, vectors, and DB rows |
-| POST | `/summarize` | Body: `document_id` **or** `text` |
+| Method | Endpoint          | Description                 |
+| ------ | ----------------- | --------------------------- |
+| POST   | `/upload`         | Upload and process document |
+| GET    | `/documents`      | List documents              |
+| GET    | `/documents/{id}` | Document details            |
+| DELETE | `/documents/{id}` | Delete document             |
+| POST   | `/summarize`      | Summarize document/text     |
 
-### Chat & knowledge
+### Chat & RAG
 
-| Method | Path | Body | Purpose |
-|---|---|---|---|
-| POST | `/chat` | `message`, `session_id?`, `document_id?` | Orchestrated reply; returns `response`, `sources`, `active_agent`, `routing_reason`, `tool_calls` |
-| GET | `/conversation/{session_id}` | – | Message history |
-| POST | `/search` | `query`, `top_k`, `document_id?`, `use_graph` | Semantic search; hybrid graph + vector when `use_graph` is true |
-| POST | `/generate-quiz` | `topic_or_context`, `num_questions` | MCQs |
-| POST | `/generate-report` | `topic`, `context?` | Structured report, saved to DB |
-| POST | `/analyze-image` | `image_path`, `prompt?` | Image metrics, OCR (if available), analysis |
+| Method | Endpoint                     | Description              |
+| ------ | ---------------------------- | ------------------------ |
+| POST   | `/chat`                      | Multi-agent chat         |
+| GET    | `/conversation/{session_id}` | Conversation history     |
+| POST   | `/search`                    | Vector / GraphRAG search |
+| POST   | `/generate-quiz`             | Generate MCQs            |
+| POST   | `/generate-report`           | Generate report          |
+| POST   | `/analyze-image`             | Analyze image            |
 
-### Analysis
+### Analytics
 
-| Method | Path | Body | Purpose |
-|---|---|---|---|
-| POST | `/analyze-data` | `file_path`, `task_type`, `target_column?`, `model_name?`, `n_clusters` | ML pipeline (`400` on bad input, `404` if file missing) |
-| POST | `/analytics` | `file_path`, `revenue_column?`, `cost_column?`, `dimension_column?` | KPIs, breakdown, insights |
-| POST | `/forecast` | `file_path`, `date_column`, `target_column`, `horizon_periods`, `model_type` | Forecast with metrics |
-
-### Response and error format
-
-There is no shared response envelope. Successful calls return the endpoint's JSON object directly. Errors from `HTTPException` use FastAPI's standard shape, and unhandled exceptions return a `500` with an `error` and `detail` field:
-
-```json
-{ "detail": "Document not found" }
-```
-
-```json
-{ "error": "Internal Server Error", "detail": "..." }
-```
-
-### Background processing
-
-All work — including ingestion, embedding, training, and forecasting — runs synchronously inside the request. There is no task queue, job-status endpoint, or worker process.
+| Method | Endpoint        | Description             |
+| ------ | --------------- | ----------------------- |
+| POST   | `/analyze-data` | Machine learning        |
+| POST   | `/analytics`    | Business intelligence   |
+| POST   | `/forecast`     | Time-series forecasting |
 
 ---
 
-## Testing
+# 🧪 Testing
 
-The suite contains 34 tests across eight test files and runs offline in about a second.
-
-| File | Covers |
-|---|---|
-| `test_agents.py` | Safe calculator, routing, coreference resolution |
-| `test_rag.py` | Retrieval and reranking, grounded answers, "not found" fallback |
-| `test_embeddings_vectorstore.py` | Chunking, embedding similarity, vector-store CRUD |
-| `test_document_processors.py` | PDF, DOCX, CSV, Excel, image extraction |
-| `test_ml_bi_forecasting.py` | Classification, clustering, anomaly detection, forecasting, KPIs |
-| `test_graphrag_api.py` | Graph extraction/store, health, auth + chat, upload and listing |
-| `test_security.py` | Filename sanitising, file validation, hashing, JWT, prompt-injection filter |
-| `test_user_profile.py` | Profile defaults, update, validation |
+The project currently contains **34 tests** across eight test files.
 
 ```bash
-pytest            # run everything
-pytest -v         # verbose
+pytest
+```
+
+Verbose:
+
+```bash
+pytest -v
+```
+
+Run RAG tests:
+
+```bash
 pytest tests/test_rag.py
 ```
 
-`conftest.py` redirects the database, uploads, and vector store to a temporary directory, so tests do not touch your `data/` folder. There is no browser/E2E test suite; the upload → analyse → forecast → report journey is available through the UI and API but is not automated end-to-end.
+### Test Coverage Areas
+
+* Agent routing
+* Calculator
+* RAG retrieval
+* Reranking
+* Embeddings
+* Vector store
+* Document processors
+* Machine learning
+* Business intelligence
+* Forecasting
+* GraphRAG
+* Authentication
+* Security
+* User profiles
 
 ---
 
-## CI/CD
+# 🔄 CI/CD
 
-`.github/workflows/ci.yml` runs on pushes to `main`, `master`, and `develop`, and on pull requests to `main`/`master`:
+GitHub Actions runs tests on:
+
+* Python 3.11
+* Python 3.12
+
+Workflow:
 
 ```text
-Checkout → Set up Python (3.11, 3.12 matrix) → pip install -r requirements.txt → pytest -v --durations=10
-                                                                  │
-                                              (on success) Docker Buildx → build image (not pushed)
+Checkout
+   ↓
+Setup Python
+   ↓
+Install Dependencies
+   ↓
+Run Pytest
+   ↓
+Docker Build
 ```
 
-There is no lint or type-check step and no deployment stage. Until `email-validator` is added to `requirements.txt`, expect the install-then-test job to fail on a clean runner.
+The current CI does not deploy the application automatically.
 
 ---
 
-## Troubleshooting
+# 🛠️ Troubleshooting
 
-| Problem | Likely cause and fix |
-|---|---|
-| `ImportError: email-validator is not installed` | Run `pip install email-validator` (see the known issue under [Installation](#installation--running)) |
-| "I could not find this information in the uploaded documents." | Nothing relevant was retrieved. Upload a document first, or lower `SIMILARITY_THRESHOLD`. With mock embeddings, matching is vocabulary-based, so rephrase using words from the document |
-| Summaries, quizzes, or image descriptions look generic, data Q&A returns a generic greeting, or reports say "could not find this information" | You are on `LLM_PROVIDER=mock`; those outputs are templates or fallbacks. Set `LLM_PROVIDER=openai` and `LLM_API_KEY` (see [Limitations](#limitations)) |
-| `404 Data file ... not found` | Analysis endpoints need a server-side path such as `data/uploads/<document_id>_<name>.csv`; use the `document_id` returned by `/upload` |
-| `400 File validation failed` | Check size (`MAX_UPLOAD_SIZE_MB`), extension (`ALLOWED_EXTENSIONS`), and that the file content matches its extension |
-| `.xls` upload fails to parse | Legacy `.xls` parsing may require the optional `xlrd` package, which is not in `requirements.txt` |
-| Dashboard icons or fonts missing | The page loads Lucide and Google Fonts from CDNs; check connectivity |
-| Forecast error "Insufficient chronological data points" | At least 5 dated rows are needed |
-| Port 8000 already in use | Start with `--port 8001` or stop the other process; for Docker change the host port in `docker-compose.yml` |
-| Want a clean slate | Stop the app and delete `data/multimind.db`, `data/vector_store/*` (keep `.gitkeep`), and `data/uploads/*` |
-| Token rejected after changing `SECRET_KEY` | Tokens signed with the old key are invalid; log in again |
+### Email Validator Error
 
----
+```text
+ImportError: email-validator is not installed
+```
 
-## Limitations
+Fix:
 
-- **The default "LLM" is not a language model.** With `LLM_PROVIDER=mock`, RAG answers are extracted from retrieved sentences (grounded and cited), and the BI, forecasting, and calculator paths do not use an LLM at all. But summaries, quizzes, and image analysis return fixed template text that is *not* derived from your content; the Data agent returns a generic reply instead of answering; and report generation (both `/generate-report` and the report agent) returns the "could not find this information" fallback. Use `LLM_PROVIDER=openai` for real generation. Only the OpenAI provider is implemented, and if an OpenAI call fails the service silently falls back to the local engine.
-- **Embeddings are hashed lexical features** by default, not semantic embeddings.
-- **Single-node, in-memory vector search.** The NumPy store loads everything into RAM and rewrites the index on each write; it suits small-to-medium corpora, not large-scale use.
-- **GraphRAG is partial:** the graph is not populated during ingestion, entity extraction is dictionary/heuristic based, and document deletion does not remove graph entries.
-- **Routing is keyword-based** and agents run one at a time; ambiguous phrasing can reach the wrong agent. Coreference resolution is a simple pronoun substitution.
-- **File selection by agents:** the data, BI, and forecasting agents use the last CSV/XLSX returned by a listing of the upload directory (not necessarily the newest or the one you mean), and `document_id` passed to `/chat` is accepted but does not currently filter retrieval.
-- **Forecasting** has no confidence intervals and supports only Ridge and Random Forest; ML models are not saved.
-- **No customer-segmentation (RFM) workflow, anomaly severity levels, fact-checking agent, web research, or automated multi-agent pipelines.**
-- **PDF text extraction** has no OCR fallback for scanned PDFs; DOCX and TXT content is assigned page 1.
-- **Reports** cannot yet be listed or exported through the API.
-- **Dashboard** contains placeholder statistics and activity entries (see [Web Dashboard](#web-dashboard)).
-- **Security hardening is incomplete** (see the deployment warning above).
-- **No migrations, background workers, caching, or production deployment configuration.**
+```bash
+pip install email-validator
+```
 
----
+### RAG Cannot Find Information
 
-## Roadmap
+If you see:
 
-Planned or aspirational — none of these are implemented today.
+```text
+I could not find this information in the uploaded documents.
+```
 
-**Foundations**
-- Add `email-validator` to `requirements.txt`; add lint and type-check steps to CI.
-- Protect data endpoints with JWT; remove `/auth/switch-user`; enforce roles; restrict file paths to the upload directory; configurable CORS; rate limiting.
-- Alembic migrations and PostgreSQL support with a documented driver.
+Upload the relevant document or adjust:
 
-**AI & retrieval**
-- Additional LLM providers (Groq, Gemini, Anthropic) and real embedding backends (sentence-transformers).
-- Production vector database (e.g. ChromaDB or Qdrant) behind the existing store interface.
-- Populate the knowledge graph during ingestion; domain entities such as customers, products, and suppliers.
-- Real multi-agent orchestration: planning, parallel execution, retries, timeouts, and a persisted execution trace.
-- Dedicated fact-checking and web-research agents with source verification.
+```env
+SIMILARITY_THRESHOLD=0.35
+```
 
-**Analytics**
-- Forecast confidence intervals; ARIMA/Prophet or gradient-boosting models; model persistence and monitoring.
-- RFM customer segmentation; anomaly severity levels; richer BI metrics (retention, regional and category performance).
-- Charts in the dashboard; live dashboard statistics; report listing and PDF/Excel export.
+Because mock embeddings are lexical rather than true semantic embeddings, using terminology from the document can improve retrieval.
 
-**Operations**
-- Background task queue with job-status endpoints; caching; deployment configuration; automated end-to-end tests.
+### Generic AI Responses
+
+The default configuration uses:
+
+```env
+LLM_PROVIDER=mock
+```
+
+For real LLM generation, configure:
+
+```env
+LLM_PROVIDER=openai
+LLM_API_KEY=your_api_key
+```
+
+### Port Already in Use
+
+```bash
+uvicorn app.main:app --reload --port 8001
+```
 
 ---
 
-## Project Status
+# ⚠️ Limitations
 
-| State | Items |
-|---|---|
-| **Implemented** | Upload validation and multimodal extraction; chunking, embeddings, vector search, reranking, cited RAG answers; orchestrator with eight agents and a calculator; BI KPIs and insights; scikit-learn ML tasks; lag-feature forecasting; JWT login/register/profile; SQLAlchemy persistence; dashboard UI; Docker and CI definitions; 34 passing tests |
-| **Partial / in development** | LLM-dependent features (reports, quizzes, summaries, data Q&A — need a real provider); GraphRAG (components exist, ingestion not connected); OpenAI integration (basic); image analysis (OCR optional); authentication coverage; dashboard live data |
-| **Planned** | Everything under the [Roadmap](#roadmap) |
+MultiMind AI is intentionally a development-stage project.
 
-This is a development-stage project and should not be described as production-ready.
+Current limitations include:
 
----
-
-## Contributing
-
-1. Fork and clone the repository.
-2. Create a feature branch:
-   ```bash
-   git checkout -b feature/my-new-feature
-   ```
-3. Follow the existing layout (routes in `app/api/`, logic in the domain packages, persistence via repositories).
-4. Add or update tests in `tests/` and run `pytest` until it passes.
-5. Update this README and any relevant file in `docs/` when behaviour changes.
-6. Avoid breaking existing API request/response contracts without discussion.
-7. **Never commit secrets** — `.env`, API keys, tokens, or credentials.
-8. Commit, push, and open a pull request:
-   ```bash
-   git add .
-   git commit -m "Add new feature"
-   git push origin feature/my-new-feature
-   ```
-
-Pull requests should describe the change and motivation, link related issues, include tests, and keep the diff focused.
+* Mock LLM is not a real language model
+* Default embeddings are hashed lexical features
+* NumPy vector search is single-node/in-memory
+* GraphRAG ingestion is incomplete
+* Agent routing is keyword-based
+* Agents run sequentially
+* ML models are not persisted
+* Forecast confidence intervals are unavailable
+* Only Ridge and Random Forest forecasting are implemented
+* No RFM customer segmentation
+* No fact-checking agent
+* No web research agent
+* No automated multi-agent planning
+* No background workers
+* No caching
+* No production deployment configuration
+* Dashboard still contains some placeholder statistics
+* Security hardening is incomplete
 
 ---
 
-## Security Reporting
+# 🗺️ Roadmap
 
-Please **do not open public issues** for security vulnerabilities, and never post API keys, passwords, database credentials, JWT secrets, or `.env` contents publicly. Report privately to the maintainer through the contact method on the repository owner's profile (or GitHub's private vulnerability reporting, if enabled on the repository). If you believe you have exposed a credential, rotate it immediately.
+## Foundations
+
+* [ ] Add `email-validator` to requirements
+* [ ] Add linting
+* [ ] Add type checking
+* [ ] Protect data endpoints with JWT
+* [ ] Remove demo user switching
+* [ ] Implement role enforcement
+* [ ] Restrict file paths
+* [ ] Configure production CORS
+* [ ] Add rate limiting
+* [ ] Add Alembic migrations
+* [ ] Add PostgreSQL support
+
+## AI & Retrieval
+
+* [ ] Additional LLM providers
+* [ ] Sentence-transformers embeddings
+* [ ] ChromaDB / Qdrant integration
+* [ ] Automatic GraphRAG ingestion
+* [ ] Customer/Product/Supplier entities
+* [ ] Advanced multi-agent orchestration
+* [ ] Parallel execution
+* [ ] Retries and timeouts
+* [ ] Persistent execution traces
+* [ ] Fact-checking agent
+* [ ] Web research agent
+
+## Analytics
+
+* [ ] Forecast confidence intervals
+* [ ] ARIMA / Prophet / advanced forecasting
+* [ ] Model persistence
+* [ ] Model monitoring
+* [ ] RFM customer segmentation
+* [ ] Anomaly severity levels
+* [ ] Advanced BI metrics
+* [ ] Dashboard charts
+* [ ] Live dashboard statistics
+* [ ] PDF / Excel export
+
+## Operations
+
+* [ ] Background task queue
+* [ ] Job status endpoints
+* [ ] Caching
+* [ ] Production deployment configuration
+* [ ] Automated E2E tests
 
 ---
 
-## License
+# 📊 Project Status
 
-No `LICENSE` file is included in this repository, so no explicit license has been granted. Add a license file before sharing or accepting contributions publicly.
+| Area                          | Status        |
+| ----------------------------- | ------------- |
+| Multimodal document ingestion | ✅ Implemented |
+| RAG + citations               | ✅ Implemented |
+| Vector search                 | ✅ Implemented |
+| Multi-agent routing           | ✅ Implemented |
+| BI                            | ✅ Implemented |
+| Machine Learning              | ✅ Implemented |
+| Forecasting                   | ✅ Implemented |
+| JWT authentication            | 🟡 Partial    |
+| GraphRAG                      | 🟡 Partial    |
+| LLM integration               | 🟡 Partial    |
+| Image analysis                | 🟡 Partial    |
+| Dashboard live data           | 🟡 Partial    |
+| Advanced orchestration        | 🔵 Planned    |
+| Production hardening          | 🔵 Planned    |
+
+> **MultiMind AI is a development-stage portfolio project and should not currently be described as production-ready.**
 
 ---
 
-## Vision
+# 🤝 Contributing
 
-MultiMind AI explores how far a single codebase can go beyond a static dashboard or a plain chatbot by combining document intelligence, retrieval-augmented generation, agent routing, business analytics, machine learning, and forecasting — each grounded in your own data and each computed by auditable code rather than by guesswork.
+1. Fork the repository.
+2. Clone your fork.
+3. Create a feature branch.
+
+```bash
+git checkout -b feature/my-new-feature
+```
+
+4. Implement your changes.
+5. Add or update tests.
+6. Run:
+
+```bash
+pytest
+```
+
+7. Update the README when behavior changes.
+8. Never commit secrets.
+9. Commit and push your changes.
+
+```bash
+git add .
+git commit -m "Add new feature"
+git push origin feature/my-new-feature
+```
+
+---
+
+# 🔒 Security Reporting
+
+Please do not publicly disclose security vulnerabilities.
+
+Never publish:
+
+* API keys
+* Passwords
+* Database credentials
+* JWT secrets
+* `.env` contents
+* Authentication tokens
+
+If a credential is accidentally exposed, **rotate it immediately**.
+
+---
+
+# 📄 License
+
+No `LICENSE` file is currently included in the repository.
+
+Add an appropriate license file before publicly distributing the project or accepting external contributions.
+
+---
+
+# 🎯 Vision
+
+MultiMind AI explores how a single codebase can combine:
+
+**Document Intelligence + RAG + Multi-Agent AI + Business Intelligence + Machine Learning + Forecasting**
+
+while keeping calculations auditable and grounded in the user's own data.
 
 > **Turn data, documents, and research into actionable business intelligence with AI.**
 
-*Developer credit shown in the dashboard: Youza Ahsan.*
+---
+
+### 👨‍💻 Developer
+
+**Youza Ahsan**
+
+*Developer credit shown in the MultiMind AI dashboard.*
